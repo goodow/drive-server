@@ -6,6 +6,7 @@
     <artifactId>realtime-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+  <groupId>com.goodow.drive</groupId>
   <artifactId>drive-server</artifactId>
   <packaging>war</packaging>
   <url>https://github.com/goodow/drive-server/</url>
