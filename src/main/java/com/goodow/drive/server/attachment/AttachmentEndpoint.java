@@ -76,7 +76,10 @@ public class AttachmentEndpoint {
   @ApiMethod(name = "remove", httpMethod = HttpMethod.POST)
   public Attachment remove(@Named("id") String id) {
     Attachment attachment = em.get().find(Attachment.class, id);
-    blobstoreService.delete(new BlobKey(attachment.getBlobKey()));
+    String blobKey = attachment.getBlobKey();
+    if (blobKey != null) {
+      blobstoreService.delete(new BlobKey(blobKey));
+    }
     em.get().remove(attachment);
     return attachment;
   }
