@@ -4,4 +4,5 @@ $DEV_SERVER \
   --jvm_flag=-Dfile.encoding=UTF-8 \
   --jvm_flag=-Xmx2048m \
   --disable_update_check --address=0.0.0.0 --port=8880 \
-  target/drive-server-0.0.1-SNAPSHOT
+  target/drive-server-0.0.1-SNAPSHOT \
+  2>&1 | tee target/drive-server-0.0.1-SNAPSHOT/log.txt
