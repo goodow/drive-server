@@ -8,108 +8,39 @@
   </parent>
   <groupId>com.goodow.drive</groupId>
   <artifactId>drive-server</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>war</packaging>
   <url>https://github.com/goodow/drive-server/</url>
   <inceptionYear>2013</inceptionYear>
   
+  <properties>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+    
+    <!-- Set pullInDeps to true if you want any modules specified in the 'includes' and 'deploys' fields
+    in your mod.json to be automatically pulled in during packaging and added inside your module. Doing this means your
+    module won't download and install those dependencies at run-time when they're first requested. -->
+    <vertx.pullInDeps>false</vertx.pullInDeps>
+  </properties>
+  
   <dependencies>
-    <!-- Internal modules -->
+	<!--Vert.x dependencies-->
     <dependency>
-      <groupId>com.goodow.realtime</groupId>
-      <artifactId>realtime-model</artifactId>
-      <version>${project.parent.version}</version>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-platform</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>mod-web-server</artifactId>
     </dependency>
     
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
     </dependency>
-    
-    <!-- Google App Engine Compile/runtime dependencies -->
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-1.0-sdk</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-labs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-endpoints</artifactId>
-    </dependency>
-    <!-- Google App Engine Test Dependencies -->
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-testing</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-api-stubs</artifactId>
-    </dependency>
-    <!-- <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-java-sdk</artifactId>
-      <version>${gae.version}</version>
-      <type>zip</type>
-    </dependency> -->
-    
-    <!-- Google App Engine JPA -->
-    <dependency>
-      <groupId>com.google.appengine.orm</groupId>
-      <artifactId>datanucleus-appengine</artifactId>
-      <version>2.1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.appengine</groupId>
-      <artifactId>appengine-jsr107cache</artifactId>
-      <version>${gae.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.datanucleus</groupId>
-      <artifactId>datanucleus-api-jpa</artifactId>
-      <version>3.1.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jpa_2.0_spec</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jta_1.1_spec</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jsr107cache</groupId>
-      <artifactId>jsr107cache</artifactId>
-      <version>1.1</version>
-    </dependency>
-    
-    <!-- Guice -->
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-multibindings</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-assistedinject</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.inject.extensions</groupId>
-      <artifactId>guice-persist</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-    </dependency>
-    
+        
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -118,43 +49,79 @@
   </dependencies>
 
   <build>
-    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
-    
     <plugins>
-      <!-- Google App Engine maven plugin -->
+      <!-- The vert.x Maven plugin -->
       <plugin>
-        <groupId>com.google.appengine</groupId>
-        <artifactId>appengine-maven-plugin</artifactId>
-        <version>${gae.version}</version>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
         <configuration>
-          <enhancerApi>JPA</enhancerApi>
-          <enableJarClasses>false</enableJarClasses>
-          <disableUpdateCheck>true</disableUpdateCheck>
-          <address>0.0.0.0</address>
-          <port>8880</port>
+           <configFile>src/main/resources/config.json</configFile>
         </configuration>
         <executions>
           <execution>
-            <id>DataNucleus Enhancement</id>
-            <phase>compile</phase>
+            <id>PullInDeps</id>
+            <phase>prepare-package</phase>
             <goals>
-              <goal>enhance</goal>
+              <goal>pullInDeps</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
-      <!-- Mark the project for Google Plugin for Eclipse (GPE) -->
+
+      <!-- Other plugins required by the build -->
       <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.9</version>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-mod-to-target</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <overwrite>true</overwrite>
+              <outputDirectory>target/mods/${vertx.module.name}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>target/classes</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-mod-dependencies-to-target</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/mods/${vertx.module.name}/lib</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
-          <downloadSources>true</downloadSources>
-          <downloadJavadocs>false</downloadJavadocs>
-          <wtpversion>2.0</wtpversion>
-          <additionalProjectnatures>
-            <projectnature>com.google.appengine.eclipse.core.gaeNature</projectnature>
-          </additionalProjectnatures>
+          <descriptors>
+            <descriptor>src/main/assembly/mod.xml</descriptor>
+          </descriptors>
         </configuration>
+        <executions>
+          <execution>
+            <id>assemble</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
     
@@ -170,13 +137,11 @@
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>com.google.appengine</groupId>
-                    <artifactId>appengine-maven-plugin</artifactId>
-                    <versionRange>[${gae.version},)</versionRange>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[${2.7},)</versionRange>
                     <goals>
-                      <goal>enhance</goal>
-                      <goal>endpoints_get_discovery_doc</goal>
-                      <goal>endpoints_get_client_lib</goal>
+                      <goal>copy-dependencies</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>
