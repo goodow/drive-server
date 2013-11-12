@@ -1,0 +1,17 @@
+{
+  "web_root": "target/classes/web",
+  // "host": "0.0.0.0",
+  "port": 8082,
+  "route_matcher": true,
+  
+  "guice_binder": "com.goodow.drive.server.bootstrap.DriveModule", 
+  
+  "elasticsearch": {
+    "client": {
+      "transport": {
+        "host": "data.goodow.com",
+        "port": 9300
+      }
+    }
+  }
+}

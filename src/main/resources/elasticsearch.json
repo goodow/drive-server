@@ -1,0 +1,10 @@
+{
+  "cluster" : {
+    "name": "elasticsearch"
+  },
+  "client": {
+    "transport": {
+      "sniff": true
+    }
+  }
+}

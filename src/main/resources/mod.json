@@ -1,6 +1,6 @@
 {
   // Java verticle
-  "main":"com.goodow.drive.server.bootstrap.DriveVerticle",
+  "main": "com.goodow.drive.server.bootstrap.DriveVerticle",
   // "preserve-cwd": true
   
   "auto-redeploy": true

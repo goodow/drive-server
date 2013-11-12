@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 3,
+      "number_of_replicas": 1
+    }
+  },
+  "mappings": {
+    "attachment": {
+      "properties": {
+        "file": {
+          "type": "attachment",
+          "fields": {
+            "file" : {"store" : "no"},
+            "title": {"store": "yes"},
+            "date": {"store": "yes"},
+            "name": {"store": "yes"},
+            "author": {"store": "yes"},
+            "keywords": {"store": "yes"},
+            "content_type": {"store": "yes"},
+            "content_length": {"store": "yes"}
+          }
+        }
+      }
+    }
+  }
+}
