@@ -7,6 +7,10 @@
   },
   "mappings": {
     "attachment": {
+      "analyzer": "ik",
+      "_source": {
+        "excludes": ["file.content"]
+      },
       "properties": {
         "file": {
           "type": "attachment",

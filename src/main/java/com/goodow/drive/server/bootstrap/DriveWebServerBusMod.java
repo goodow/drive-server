@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.mods.web.WebServer;
 
-public class DriveWebServer extends WebServer {
+public class DriveWebServerBusMod extends WebServer {
   @Inject private FormUploadHandler formUploadHandler;
   @Inject private DownloadHandler downloadHandler;
 

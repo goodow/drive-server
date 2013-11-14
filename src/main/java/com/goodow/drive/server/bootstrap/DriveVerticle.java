@@ -16,7 +16,7 @@ public class DriveVerticle extends BusModBase {
   public void start(final Future<Void> startedResult) {
     super.start();
 
-    container.deployVerticle(DriveWebServer.class.getName(), config,
+    container.deployVerticle(DriveWebServerBusMod.class.getName(), config,
         new AsyncResultHandler<String>() {
           @Override
           public void handle(AsyncResult<String> event) {
