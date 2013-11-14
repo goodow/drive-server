@@ -2,20 +2,27 @@
   "settings": {
     "index": {
       "number_of_shards": 3,
-      "number_of_replicas": 1
+      "number_of_replicas": 1,
+      "analysis": {
+        "analyzer": {
+          "ik": {
+            "alias": ["ik_analyzer"],
+            "type": "org.elasticsearch.index.analysis.IkAnalyzerProvider"
+          },
+          "ik_max_word": {"type": "ik", "use_smart": false},
+          "ik_smart": {"type": "ik", "use_smart": true},
+          "default": {"type": "ik", "use_smart": false}
+        }
+      }
     }
   },
   "mappings": {
-    "attachment": {
-      "analyzer": "ik",
-      "_source": {
-        "excludes": ["file.content"]
-      },
+    "readable": {
       "properties": {
         "file": {
           "type": "attachment",
           "fields": {
-            "file" : {"store" : "no"},
+            "file" : {"store": "no"},
             "title": {"store": "yes"},
             "date": {"store": "yes"},
             "name": {"store": "yes"},
@@ -24,7 +31,26 @@
             "content_type": {"store": "yes"},
             "content_length": {"store": "yes"}
           }
-        }
+        },
+        "tags": {"type": "string", "store": "yes"}
+      }
+    },
+    "binary": {
+      "properties": {
+        "file": {
+          "type": "attachment",
+          "fields": {
+            "file" : {"store": "no", "index": "no", "include_in_all": false},
+            "title": {"store": "yes"},
+            "date": {"store": "yes"},
+            "name": {"store": "yes"},
+            "author": {"store": "yes"},
+            "keywords": {"store": "yes"},
+            "content_type": {"store": "yes"},
+            "content_length": {"store": "yes"}
+          }
+        },
+        "tags": {"type": "string", "store": "yes"}
       }
     }
   }

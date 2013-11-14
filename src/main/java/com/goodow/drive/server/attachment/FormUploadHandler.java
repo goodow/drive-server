@@ -10,6 +10,7 @@ import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.AsyncResultHandler;
@@ -46,7 +47,7 @@ public class FormUploadHandler implements Handler<HttpServerRequest> {
         upload.endHandler(new Handler<Void>() {
           @Override
           public void handle(Void event) {
-            indexAttachment(id, req, upload);
+            prepareIndex(id, req, upload);
           }
         });
         upload.streamToFileSystem(attachmentsDir + "/" + id);
@@ -54,35 +55,41 @@ public class FormUploadHandler implements Handler<HttpServerRequest> {
     });
   }
 
-  private void indexAttachment(final String id, final HttpServerRequest req,
+  private void indexAttachment(final HttpServerRequest req, IndexRequestBuilder indexRequestBuilder) {
+    indexRequestBuilder.execute(new ActionListener<IndexResponse>() {
+      @Override
+      public void onFailure(Throwable e) {
+        sendError(req, "Failed to index", e);
+      }
+
+      @Override
+      public void onResponse(IndexResponse response) {
+        sendResponse(req, response);
+      }
+    });
+  }
+
+  private void prepareIndex(final String id, final HttpServerRequest req,
       final HttpServerFileUpload upload) {
+    final IndexRequestBuilder indexReq =
+        client.prepareIndex(DriveModule.INDEX, AttachmentUtil.isBinary(upload.contentType())
+            ? DriveModule.BINARY_TYPE : DriveModule.READABLE_TYPE, id);
     vertx.fileSystem().readFile(attachmentsDir + "/" + id, new AsyncResultHandler<Buffer>() {
       @Override
       public void handle(AsyncResult<Buffer> ar) {
-        if (ar.succeeded()) {
-          IndexRequestBuilder indexRequestBuilder;
-          try {
-            indexRequestBuilder =
-                client.prepareIndex(DriveModule.INDEX, DriveModule.TYPE, id).setSource(
-                    XContentFactory.jsonBuilder().startObject().startObject("file").field("_name",
-                        upload.filename()).field("content", ar.result().getBytes()).endObject()
-                        .endObject());
-            indexRequestBuilder.execute(new ActionListener<IndexResponse>() {
-              @Override
-              public void onFailure(Throwable e) {
-                sendError(req, "Failed to index", e);
-              }
-
-              @Override
-              public void onResponse(IndexResponse response) {
-                sendResponse(req, response);
-              }
-            });
-          } catch (IOException e) {
-            sendError(req, "Failed to index", e);
-          }
-        } else {
-          sendError(req, "Failed to read", ar.cause());
+        if (!ar.succeeded()) {
+          sendError(req, "Failed to read file", ar.cause());
+          return;
+        }
+        try {
+          XContentBuilder doc =
+              XContentFactory.jsonBuilder().startObject().startObject("file").field("_name",
+                  upload.filename()).field("_content_type", upload.contentType()).field("content",
+                  ar.result().getBytes()).endObject().endObject();
+          IndexRequestBuilder indexRequestBuilder = indexReq.setSource(doc);
+          indexAttachment(req, indexRequestBuilder);
+        } catch (IOException e) {
+          sendError(req, "Failed to construct document", e);
         }
       }
     });

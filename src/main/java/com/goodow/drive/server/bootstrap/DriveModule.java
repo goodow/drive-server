@@ -24,8 +24,9 @@ import java.util.logging.Logger;
 
 public class DriveModule extends AbstractModule {
   private static final Logger log = Logger.getLogger(DriveModule.class.getName());
-  public static final String INDEX = "admin";
-  public static final String TYPE = "attachment";
+  public static final String INDEX = "attachment";
+  public static final String READABLE_TYPE = "readable";
+  public static final String BINARY_TYPE = "binary";
   public static final String ATTACHMENTS_DIR = "attachments_dir";
   public static final String WEB_ROOT = "web_root";
   @Inject private Vertx vertx;
