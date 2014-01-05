@@ -1,7 +1,7 @@
 package com.goodow.drive.server.attachment;
 
 import com.goodow.drive.server.bootstrap.DriveModule;
-import com.goodow.realtime.operation.id.IdGenerator;
+import com.goodow.realtime.channel.util.IdGenerator;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;

@@ -4,17 +4,15 @@
   <parent>
     <groupId>com.goodow.realtime</groupId>
     <artifactId>realtime-parent</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.5.5-SNAPSHOT</version>
   </parent>
   <groupId>com.goodow.drive</groupId>
   <artifactId>drive-server</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
   <url>https://github.com/goodow/drive-server/</url>
   <inceptionYear>2013</inceptionYear>
   
   <properties>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-    
     <!-- Set pullInDeps to true if you want any modules specified in the 'includes' and 'deploys' fields
     in your mod.json to be automatically pulled in during packaging and added inside your module. Doing this means your
     module won't download and install those dependencies at run-time when they're first requested. -->
@@ -25,15 +23,11 @@
     <!-- Internal modules -->
     <dependency>
       <groupId>com.goodow.realtime</groupId>
-      <artifactId>realtime-operation</artifactId>
-      <version>${project.version}</version>
+      <artifactId>realtime-channel</artifactId>
+      <version>${project.parent.version}</version>
     </dependency>
     
 	<!--Vert.x dependencies-->
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>vertx-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-platform</artifactId>
@@ -51,9 +45,8 @@
     
     <!-- Guice -->
     <dependency>
-      <groupId>com.englishtown</groupId>
-      <artifactId>vertx-mod-guice</artifactId>
-      <version>1.3.0-final</version>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
     </dependency>
         
     <!-- Test -->

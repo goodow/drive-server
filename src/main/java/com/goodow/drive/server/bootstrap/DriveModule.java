@@ -1,6 +1,6 @@
 package com.goodow.drive.server.bootstrap;
 
-import com.goodow.realtime.operation.id.IdGenerator;
+import com.goodow.realtime.channel.util.IdGenerator;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;

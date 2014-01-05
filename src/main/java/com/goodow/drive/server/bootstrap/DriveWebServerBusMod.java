@@ -16,8 +16,8 @@ public class DriveWebServerBusMod extends WebServer {
   protected RouteMatcher routeMatcher() {
     RouteMatcher routeMatcher = super.routeMatcher();
 
-    routeMatcher.post("/attachment", formUploadHandler);
-    routeMatcher.get("/attachment/:id", downloadHandler);
+    routeMatcher.post("/" + DriveModule.INDEX, formUploadHandler);
+    routeMatcher.get("/" + DriveModule.INDEX + "/:id", downloadHandler);
     return routeMatcher;
   }
 }
