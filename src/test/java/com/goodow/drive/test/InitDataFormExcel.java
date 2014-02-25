@@ -14,7 +14,7 @@ public class InitDataFormExcel {
 
   public static final JsonArray TABLE_RELATION_DATA = Json.createArray();
   public static final JsonArray TABLE_FILE_DATA = Json.createArray();
-  private static final Map<String, String> mime = new HashMap<>();
+  private static final Map<String, String> mime = new HashMap<String, String>();
 
   static {
     mime.put("mp3", "audio/mpeg");

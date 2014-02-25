@@ -1,6 +1,5 @@
 package com.goodow.drive.test;
 
-
 import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
@@ -309,7 +308,7 @@ public class InitData {
             file.set(Constant.KEY_NAME, strings[0] + strings[1] + strings[2] + strings[3] + k
                 + "文件" + l + ".mp3");
             file.set(Constant.KEY_CONTENTTYPE, "audio/mp3");
-            file.set(Constant.KEY_CONTENTLENGTH, "123");
+            file.set(Constant.KEY_CONTENTLENGTH, 123);
             file.set(Constant.KEY_URL, "/mnt/sdcard/abc.mp3");
             file.set(Constant.KEY_THUMBNAIL, "123456789");
             FILE_SEARCH.push(file);
@@ -356,7 +355,7 @@ public class InitData {
           file.set(Constant.KEY_NAME, strings[0] + strings[1] + strings[2] + strings[3] + "文件" + l
               + ".mp3");
           file.set(Constant.KEY_CONTENTTYPE, "video/mp4");
-          file.set(Constant.KEY_CONTENTLENGTH, "123");
+          file.set(Constant.KEY_CONTENTLENGTH, 123);
           file.set(Constant.KEY_URL, "/mnt/sdcard/abc.mp4");
           file.set(Constant.KEY_THUMBNAIL, "123456789");
           FILE_SEARCH.push(file);
@@ -398,7 +397,7 @@ public class InitData {
         file.set(Constant.KEY_ID, uuid);
         file.set(Constant.KEY_NAME, "搜索-" + SEARCH_ALL[i] + "-文件" + j + ".mp3");
         file.set(Constant.KEY_CONTENTTYPE, "audio/mp3");
-        file.set(Constant.KEY_CONTENTLENGTH, "123");
+        file.set(Constant.KEY_CONTENTLENGTH, 123);
         file.set(Constant.KEY_URL, "/mnt/sdcard/abc.mp3");
         file.set(Constant.KEY_THUMBNAIL, "123456789");
         FILE_SEARCH.push(file);

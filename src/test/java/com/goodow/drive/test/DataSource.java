@@ -15,22 +15,55 @@ import java.util.logging.Logger;
 
 public class DataSource {
   private static final Logger log = Logger.getLogger(DataSource.class.getName());
-  private static final String sid = "sid00.drive.";
+  private static final String sid = "sid0.drive.db";
+
+  // //模拟数据
+  private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
+  private static final JsonArray filesDataTemp = InitData.FILE_TABLE_DATA;
+
+  // 导入数据
+  // private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
+  // private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
+
+  private static final int num = 300;
+  private static final JsonArray insertingFiles = Json.createArray();
+  private static final JsonArray insertingTags = Json.createArray();
+
+  private static int SUCCESS_FILE_COUNTER = 0;
+  private static int SUCCESS_TAG_COUNTER = 0;
 
   static {
     JavaPlatform.register();
+    // 分组文件表数据
+    int timer_file =
+        filesDataTemp.length() % num == 0 ? filesDataTemp.length() / num : filesDataTemp.length()
+            / num + 1;
+    for (int i = 0; i < timer_file; i++) {
+      JsonArray temp = Json.createArray();
+      for (int j = 0; j < num; j++) {
+        if (num * i + j >= filesDataTemp.length()) {
+          break;
+        }
+        temp.push(filesDataTemp.getObject(num * i + j));
+      }
+      insertingFiles.push(temp);
+    }
+
+    // 分组文件表数据
+    int timer_tag =
+        tagsDataTemp.length() % num == 0 ? tagsDataTemp.length() / num : tagsDataTemp.length()
+            / num + 1;
+    for (int i = 0; i < timer_tag; i++) {
+      JsonArray temp = Json.createArray();
+      for (int j = 0; j < num; j++) {
+        if (num * i + j >= tagsDataTemp.length()) {
+          break;
+        }
+        temp.push(tagsDataTemp.getObject(num * i + j));
+      }
+      insertingTags.push(temp);
+    }
   }
-
-  private static int SUCCESS_RELATION = 0;
-  private static int SUCCESS_FILE = 0;
-
-  // //模拟数据
-  // private static final JsonArray tagsData = InitData.RELATION_TABLE_DATA;
-  // private static final JsonArray filesData = InitData.FILE_TABLE_DATA;
-
-  // 导入数据
-  private static final JsonArray tagsData = InitDataFormExcel.TABLE_RELATION_DATA;
-  private static final JsonArray filesData = InitDataFormExcel.TABLE_FILE_DATA;
 
   public static void main(String[] args) throws IOException {
     final Bus bus =
@@ -62,54 +95,45 @@ public class DataSource {
   }
 
   private static void file(final Bus bus, final JsonObject tag) {
-    bus.send(sid + "attachment", tag, new MessageHandler<JsonObject>() {
+    bus.send(sid, tag, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-          SUCCESS_FILE++;
-          System.out.println("当前插入数据量(file)：" + SUCCESS_FILE + "/" + filesData.length());
-          if (SUCCESS_FILE < filesData.length()) {
-            file(bus, Json.createObject().set(Constant.KEY_ACTION, "post").set(
-                Constant.KEY_ATTACHMENT, filesData.getObject(SUCCESS_FILE)));
+          SUCCESS_FILE_COUNTER = SUCCESS_FILE_COUNTER + tag.getArray("data").length();
+          System.out.println("当前插入文件数据量：" + SUCCESS_FILE_COUNTER + "/" + filesDataTemp.length());
+          if (SUCCESS_FILE_COUNTER % num == 0) {
+            JsonObject file =
+                Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
+                    insertingFiles.getArray(SUCCESS_FILE_COUNTER / num));
+            file(bus, file);
+          } else {
+            System.out.println("\r\n 插入文件测试数据完毕");
           }
         } else {
-          System.out.println("\r\n 插入测试数据" + tag.toString() + "失败");
+          System.out.println("\r\n 插入文件测试数据失败");
         }
       }
     });
   }
 
   private static void handlerEventBusOpened(final Bus bus) {
-    // JsonArray tableFileData = InitDataFormExcel.TABLE_FILE_DATA;
-    // for (int i = 0; i < tableFileData.length(); i++) {
-    // System.out.println(tableFileData.getObject(i).toString());
-    // }
-    //
-    // JsonArray tableTagData = InitDataFormExcel.TABLE_RELATION_DATA;
-    // for (int i = 0; i < tableTagData.length(); i++) {
-    // System.out.println(tableTagData.getObject(i).toString());
-    // }
-    // System.out.println(tableFileData.length() + tableTagData.length());
-
-    bus.send(sid + "db.clean", Json.createObject(), new MessageHandler<JsonObject>() {
+    bus.send(sid, Json.createObject().set("action", "delete"), new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
           System.out.println("数据库数据清除成功，准备插入数据");
-          final int len_relation_data = tagsData.length();
-          final int len_file_data = filesData.length();
-          System.out.println("\r\n 准备测试数据数量共：" + (len_relation_data + len_file_data));
+          JsonObject file =
+              Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
+                  insertingFiles.getArray(0));
+          file(bus, file);
+
           JsonObject relation =
-              Json.createObject().set(Constant.KEY_ACTION, "post").set(Constant.KEY_TAG,
-                  tagsData.getObject(0));
+              Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
+                  insertingTags.getArray(0));
           relation(bus, relation);
 
-          JsonObject attachment =
-              Json.createObject().set(Constant.KEY_ACTION, "post").set(Constant.KEY_ATTACHMENT,
-                  filesData.getObject(0));
-          file(bus, attachment);
         } else {
           System.out.println("数据库数据清除失败，拒绝后续数据插入");
         }
@@ -118,19 +142,23 @@ public class DataSource {
   }
 
   private static void relation(final Bus bus, final JsonObject tag) {
-    bus.send(sid + "tag", tag, new MessageHandler<JsonObject>() {
+    bus.send(sid, tag, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-          SUCCESS_RELATION++;
-          System.out.println("当前插入数据量(relation)：" + SUCCESS_RELATION + "/" + tagsData.length());
-          if (SUCCESS_RELATION < tagsData.length()) {
-            relation(bus, Json.createObject().set(Constant.KEY_ACTION, "post").set(
-                Constant.KEY_TAG, tagsData.getObject(SUCCESS_RELATION)));
+          SUCCESS_TAG_COUNTER = SUCCESS_TAG_COUNTER + tag.getArray("data").length();
+          System.out.println("当前插入文件数据量：" + SUCCESS_TAG_COUNTER + "/" + tagsDataTemp.length());
+          if (SUCCESS_TAG_COUNTER % num == 0) {
+            JsonObject relation =
+                Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
+                    insertingTags.getArray(SUCCESS_TAG_COUNTER / num));
+            relation(bus, relation);
+          } else {
+            System.out.println("\r\n 插入标签测试数据完毕");
           }
         } else {
-          System.out.println("\r\n 插入测试数据" + tag.toString() + "失败");
+          System.out.println("\r\n 插入标签映射测试数据失败");
         }
       }
     });
