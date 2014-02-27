@@ -15,15 +15,15 @@ import java.util.logging.Logger;
 
 public class DataSource {
   private static final Logger log = Logger.getLogger(DataSource.class.getName());
-  private static final String sid = "sid0.drive.db";
+  private static final String sid = "sid.drive.db";
 
   // //模拟数据
-  private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
-  private static final JsonArray filesDataTemp = InitData.FILE_TABLE_DATA;
+  // private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
+  // private static final JsonArray filesDataTemp = InitData.FILE_TABLE_DATA;
 
   // 导入数据
-  // private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
-  // private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
+  private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
+  private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
 
   private static final int num = 300;
   private static final JsonArray insertingFiles = Json.createArray();

@@ -15,6 +15,7 @@ public class InitDataFormExcel {
   public static final JsonArray TABLE_RELATION_DATA = Json.createArray();
   public static final JsonArray TABLE_FILE_DATA = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
+  private static boolean check = true;// 标记要不要校验文件属性
 
   static {
     mime.put("mp3", "audio/mpeg");
@@ -25,6 +26,7 @@ public class InitDataFormExcel {
     mime.put("jpg", "image/jpeg");
     try {
       URL url = InitDataFormExcel.class.getResource("/EXCEL.xlsx");
+      URL root = InitDataFormExcel.class.getResource("/");
       List<List<String>> data = ExcelData.getExcelData(url.getPath());
       int rows = data.size();
       for (int i = 0; i < rows; i++) {
@@ -32,23 +34,57 @@ public class InitDataFormExcel {
           continue;
         }
         List<String> list = data.get(i);
+
+        if (check) {
+          // 判断文件属性是否缺失
+          if (list.size() < 3) {
+            System.out.println("alert 第" + i + "行文件属性缺失");
+            i--;
+            continue;
+          }
+
+          // 判断文件属性路径是否存在
+          if (!new File(root.getPath() + list.get(2)).exists()) {
+            System.out.println("alert 第" + i + "行文件路径" + list.get(2) + "不存在");
+            i--;
+            continue;
+          }
+
+          // 判断文件缩略图是否存在
+          if (list.size() >= 4 && list.get(3) != null
+              && !new File(root.getPath() + list.get(3)).exists()) {
+            System.out.println("alert 第" + i + "行缩略图路径" + list.get(3) + "不存在");
+            i--;
+            continue;
+          }
+        }
+
         JsonObject file = Json.createObject();
         file.set(Constant.KEY_ID, list.get(0));// 编号
         file.set(Constant.KEY_NAME, list.get(1));// 文件名称
         file.set(Constant.KEY_URL, list.get(2));// 文件路径
-        file.set(Constant.KEY_THUMBNAIL, list.get(3));// 缩略图路径
         file.set(Constant.KEY_CONTENTLENGTH, getContentLenght(list.get(2)));// 文件长度
         file.set(Constant.KEY_CONTENTTYPE, getContentTypeBySuffix(list.get(2)));// 文件contentType
+        if (list.size() > 3) {
+          file.set(Constant.KEY_THUMBNAIL, list.get(3));// 缩略图路径
+        }
         TABLE_FILE_DATA.push(file);
 
-        // 建立文件和TAG的关系
+        /**
+         * 建立文件和TAG的关系 兼容搜索关键字是否是空 兼容从搜索一级分类（包括）以后的N列是否为空
+         */
         for (int j = 4; j < list.size(); j++) {
           if (list.get(j) == null) {
             continue;
           }
-          if (j == 6) {
+          if (j == 6 && list.get(6) != null) {
+            // 搜索的关键字 建立文件和搜索关键字的关系
             String[] splits = list.get(6).split(",");
             for (String split : splits) {
+              if (split == null || split.trim().equals("")) {
+                // 忽略无效关键字
+                continue;
+              }
               JsonObject relationFile =
                   Json.createObject().set(Constant.KEY_TYPE, "attachment").set(Constant.KEY_KEY,
                       list.get(0)).set(Constant.KEY_LABEL, split);
@@ -62,13 +98,18 @@ public class InitDataFormExcel {
           }
         }
 
-        // 建立TAG和TAG的关系
-        if (list.get(4) != null && list.get(5) != null) {// 搜索二级分类和搜索一级分类的关系
+        /**
+         * 建立一级搜索分类和二级搜索分类的关系
+         */
+        if (list.get(4) != null && list.get(5) != null) {
 
         }
 
-        // 主题分类, 班级, 学期, 主题或领域, 活动
-        if (list.get(7) != null) {
+        /**
+         * 建立主题分类, 班级, 学期, 主题或领域和活动的映射 list.size() == 12 且list.get(11) != null才有活动的概念 兼容主题分类, 班级,
+         * 学期, 主题或领域是否为空
+         */
+        if (list.size() == 12 && list.get(11) != null && list.get(7) != null) {
           for (int j = 7; j < list.size() - 1; j++) {
             if (list.get(j) != null) {
               JsonObject relationTag =
