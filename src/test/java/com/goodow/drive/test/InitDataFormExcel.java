@@ -6,6 +6,7 @@ import com.goodow.realtime.json.JsonObject;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,11 +23,12 @@ public class InitDataFormExcel {
   public static final JsonArray TABLE_RELATION_DATA = Json.createArray();
   public static final JsonArray TABLE_FILE_DATA = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
-  private static boolean check = false;// 标记要不要校验文件属性
+  private static boolean check = true;// 标记要不要校验文件属性
   private static final String SD1_PATH = "/mnt/sdcard/sd1";// 真实的sd1路径
   private static final String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
   private static final String VIR1_PATH = "attachments/sd1";// 模拟的sd1路径
   private static final String VIR2_PATH = "attachments/sd2";// 模拟的sd2路径
+  private static final List<String> suffix = new ArrayList<String>();
 
   static {
     mime.put("mp3", "audio/mpeg");
@@ -40,6 +42,13 @@ public class InitDataFormExcel {
     mime.put("动画", "application/x-shockwave-flash");
     mime.put("视频", "video/mp4");
     mime.put("音频", "audio/mpeg");
+
+    suffix.add(".mp3");
+    suffix.add(".mp4");
+    suffix.add(".pdf");
+    suffix.add(".swf");
+    suffix.add(".jpeg");
+    suffix.add(".jpg");
 
     try {
       URL url = InitDataFormExcel.class.getResource("/EXCEL.xlsx");
@@ -66,6 +75,15 @@ public class InitDataFormExcel {
           // 判断文件编号是否存在
           if (list.get(0) == null || list.get(0).trim().equals("")) {
             System.out.println("alert 第" + i + "行文件编号不能为空");
+            i--;
+            continue;
+          }
+
+          // 判断文件后缀是否合法
+          if (list.get(1) == null
+              || suffix.contains(list.get(1).trim().substring(list.get(1).trim().lastIndexOf("."),
+                  list.get(1).trim().length()))) {
+            System.out.println("alert 第" + i + "行文件后缀无效");
             i--;
             continue;
           }
