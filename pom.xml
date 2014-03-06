@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.goodow.realtime</groupId>
@@ -11,22 +11,25 @@
   <version>0.1.0-SNAPSHOT</version>
   <url>https://github.com/goodow/drive-server/</url>
   <inceptionYear>2013</inceptionYear>
-  
+
   <properties>
-    <!-- Set pullInDeps to true if you want any modules specified in the 'includes' and 'deploys' fields
-    in your mod.json to be automatically pulled in during packaging and added inside your module. Doing this means your
-    module won't download and install those dependencies at run-time when they're first requested. -->
     <vertx.pullInDeps>false</vertx.pullInDeps>
+    <vertx.createFatJar>false</vertx.createFatJar>
   </properties>
-  
+
   <dependencies>
     <!-- Internal modules -->
+    <dependency>
+      <groupId>com.goodow.realtime</groupId>
+      <artifactId>realtime-channel</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
     <dependency>
       <groupId>com.goodow.realtime</groupId>
       <artifactId>realtime-android</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    
+
     <!--Vert.x dependencies-->
     <dependency>
       <groupId>io.vertx</groupId>
@@ -36,19 +39,33 @@
       <groupId>io.vertx</groupId>
       <artifactId>mod-web-server</artifactId>
     </dependency>
-    
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>mod-redis</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>mod-redis-client</artifactId>
+      <version>1.1.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>mod-rxvertx</artifactId>
+    </dependency>
+
     <!-- ElasticSearch -->
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
     </dependency>
-    
+
     <!-- Guice -->
     <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
+      <groupId>com.goodow.vertx</groupId>
+      <artifactId>mod-guice</artifactId>
+      <version>1.0.0-beta1</version>
     </dependency>
-        
+
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -69,7 +86,7 @@
         <groupId>io.vertx</groupId>
         <artifactId>vertx-maven-plugin</artifactId>
         <configuration>
-           <configFile>src/main/resources/vertx-config.json</configFile>
+          <configFile>src/main/resources/vertx-config.json</configFile>
         </configuration>
         <executions>
           <execution>
@@ -94,7 +111,7 @@
             </goals>
             <configuration>
               <overwrite>true</overwrite>
-              <outputDirectory>target/mods/${vertx.module.name}</outputDirectory>
+              <outputDirectory>${vertx.mods.directory}/${vertx.module.name}</outputDirectory>
               <resources>
                 <resource>
                   <directory>target/classes</directory>
@@ -114,7 +131,18 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <outputDirectory>target/mods/${vertx.module.name}/lib</outputDirectory>
+              <outputDirectory>${vertx.mods.directory}/${vertx.module.name}/lib</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-mod-dependencies-to-target-dependencies</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/dependencies</outputDirectory>
               <includeScope>runtime</includeScope>
             </configuration>
           </execution>
@@ -138,7 +166,7 @@
         </executions>
       </plugin>
     </plugins>
-    
+
     <!-- Required by m2e for import into eclipse. No effect on command line builds -->
     <pluginManagement>
       <plugins>

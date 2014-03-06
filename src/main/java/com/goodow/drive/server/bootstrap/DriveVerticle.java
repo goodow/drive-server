@@ -1,22 +1,17 @@
 package com.goodow.drive.server.bootstrap;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-
-import org.elasticsearch.client.Client;
+import com.goodow.drive.server.analytics.PlayerAnalyticsVerticle;
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.AsyncResultHandler;
 import org.vertx.java.core.Future;
 
 public class DriveVerticle extends BusModBase {
-  @Inject private Provider<Client> client;
-
   @Override
   public void start(final Future<Void> startedResult) {
     super.start();
 
-    container.deployVerticle(DriveWebServerBusMod.class.getName(), config,
+    container.deployVerticle(DriveWebServer.class.getName(), config,
         new AsyncResultHandler<String>() {
           @Override
           public void handle(AsyncResult<String> event) {
@@ -27,11 +22,7 @@ public class DriveVerticle extends BusModBase {
             }
           }
         });
-  }
 
-  @Override
-  public void stop() {
-    super.stop();
-    client.get().close();
+    container.deployVerticle(PlayerAnalyticsVerticle.class.getName(), config);
   }
 }

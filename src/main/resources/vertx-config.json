@@ -1,11 +1,11 @@
 {
-  "web_root": "target/classes/web",
-  // "host": "0.0.0.0",
   "port": 8082,
   "route_matcher": true,
-  
-  "guice_binder": "com.goodow.drive.server.bootstrap.DriveModule", 
-  
+
+  "bridge": true,
+  "inbound_permitted": [{}],
+  "outbound_permitted": [{}],
+
   "elasticsearch": {
     "client": {
       "transport": {
@@ -13,5 +13,11 @@
         "port": 9300
       }
     }
+  },
+
+  "redis": {
+    "address": "redis.pub",
+    "host": "data.goodow.com",
+    "port": 6379
   }
 }

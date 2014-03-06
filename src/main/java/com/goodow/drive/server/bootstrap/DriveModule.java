@@ -1,9 +1,9 @@
 package com.goodow.drive.server.bootstrap;
 
+import com.alienos.guice.VertxModule;
 import com.goodow.realtime.channel.util.IdGenerator;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -22,25 +22,34 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DriveModule extends AbstractModule {
+public class DriveModule extends AbstractModule implements VertxModule {
   private static final Logger log = Logger.getLogger(DriveModule.class.getName());
   public static final String INDEX = "attachment";
   public static final String READABLE_TYPE = "readable";
   public static final String BINARY_TYPE = "binary";
   public static final String ATTACHMENTS_DIR = "attachments_dir";
   public static final String WEB_ROOT = "web_root";
-  @Inject private Vertx vertx;
-  @Inject private Container container;
+  private Vertx vertx;
+  private Container container;
+
+  @Override
+  public void setContainer(Container container) {
+    this.container = container;
+  }
+
+  @Override
+  public void setVertx(Vertx vertx) {
+    this.vertx = vertx;
+  }
 
   @Override
   protected void configure() {
-    requestInjection(this);
   }
 
   @Named(ATTACHMENTS_DIR)
   @Provides
   @Singleton
-  String provideattachmentsDir(@Named("web_root") String webRoot) {
+  String provideAttachmentsDir(@Named("web_root") String webRoot) {
     String attachmentsDir = webRoot + "/attachments";
     if (!vertx.fileSystem().existsSync(attachmentsDir)) {
       vertx.fileSystem().mkdirSync(attachmentsDir, true);
@@ -51,8 +60,9 @@ public class DriveModule extends AbstractModule {
   @Provides
   @Singleton
   Client provideElasticSearchClient() {
+    JsonObject config1 = container.config();
     JsonObject config =
-        container.config().getObject("elasticsearch").getObject("client").getObject("transport");
+        config1.getObject("elasticsearch").getObject("client").getObject("transport");
     TransportClient client =
         new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString(
             "host", "localhost"), config.getInteger("port", 9300)));
