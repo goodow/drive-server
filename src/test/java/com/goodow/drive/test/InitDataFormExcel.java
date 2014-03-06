@@ -63,12 +63,12 @@ public class InitDataFormExcel {
         List<String> list = data.get(i);
 
         /**
-         * 文件属性检测 0列是编号 1列是文件现实名称 2列是文件路径 3列是文件缩略图路径
+         * 文件属性检测 0列是编号 1列是文件现实名称 2列是文件路径 3列是文件缩略图路径 第四列是素材类别 第10列是搜索一级分类
          */
         if (check) {
           // 判断文件属性是否缺失
-          if (list.size() < 3) {
-            ERRORS.push("alert 第" + i + "行文件属性缺失");
+          if (list.size() < 11) {
+            ERRORS.push("alert 第" + i + "行文件属性缺失[文件编号|文件显示名称|文件路径|素材类别|搜索一级分类]都不能为空");
           }
 
           // 判断文件编号是否存在
@@ -95,23 +95,18 @@ public class InitDataFormExcel {
           }
 
           // 判断文件缩略图是否存在
-          if (list.size() >= 4 && list.get(3) != null
-              && !new File(root.getPath() + list.get(3)).exists()) {
+          if (list.get(3) != null && !new File(root.getPath() + list.get(3)).exists()) {
             ERRORS.push("alert 第" + i + "行缩略图路径" + list.get(3) + "不存在");
           }
-        }
 
-        if (check) {
+          // 判断文件素材类别
+          if (list.get(4) == null) {
+            ERRORS.push("alert 第" + i + "行素材类别" + list.get(3) + "不存在");
+          }
+
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
-          if (list.size() >= 12) {
-            // 列数足够
-            if (list.get(10) != null && list.get(11) != null && mime.containsKey(list.get(10))
-                || list.get(10) == null && list.get(11) == null) {
-              // 仅仅在一级和二级都不存在或都存在且一级合格的情况下才同过
-            } else {
-              ERRORS.push("alert 第" + i
-                  + "行一级搜索和二级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且二级分类不能是空格或NULL");
-            }
+          if (list.get(10) == null || !mime.containsKey(list.get(10))) {
+            ERRORS.push("alert 第" + i + "行一级搜索和二级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中");
           }
         }
       }
