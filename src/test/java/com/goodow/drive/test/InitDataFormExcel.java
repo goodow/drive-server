@@ -7,6 +7,7 @@ import com.goodow.realtime.json.JsonObject;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,13 +24,15 @@ public class InitDataFormExcel {
   public static final JsonArray TABLE_RELATION_DATA = Json.createArray();
   public static final JsonArray TABLE_FILE_DATA = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
-  private static boolean check = true;// 标记要不要校验文件属性
+  private static boolean check = false;// 标记要不要校验文件属性
   private static final String SD1_PATH = "/mnt/external_sd";// 真实的sd1路径
   private static final String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
   private static final String VIR1_PATH = "attachments/sd1";// 模拟的sd1路径
   private static final String VIR2_PATH = "attachments/sd2";// 模拟的sd2路径
   private static final List<String> suffix = new ArrayList<String>();
   private static final JsonArray ERRORS = Json.createArray();
+  private static final List<String> catagories = Arrays.asList("活动设计", "文学作品", "说明文字", "背景知识",
+      "乐谱", "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "游戏", "音频", "音效");
 
   static {
     mime.put("mp3", "audio/mpeg");
@@ -100,8 +103,8 @@ public class InitDataFormExcel {
           }
 
           // 判断文件素材类别
-          if (list.get(4) == null) {
-            ERRORS.push("alert 第" + i + "行素材类别" + list.get(3) + "不存在");
+          if (list.get(4) == null || !catagories.contains(list.get(4))) {
+            ERRORS.push("alert 第" + i + "行素材类别" + list.get(4) + "不存在，或素材类别不再19个分类中");
           }
 
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
