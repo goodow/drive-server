@@ -24,13 +24,15 @@ public class InitDataFormExcel {
   public static final JsonArray TABLE_RELATION_DATA = Json.createArray();
   public static final JsonArray TABLE_FILE_DATA = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
-  private static boolean check = false;// 标记要不要校验文件属性
+  private static boolean check = true;// 标记要不要校验文件属性
   private static final String SD1_PATH = "/mnt/external_sd";// 真实的sd1路径
   private static final String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
   private static final String VIR1_PATH = "attachments/sd1";// 模拟的sd1路径
   private static final String VIR2_PATH = "attachments/sd2";// 模拟的sd2路径
   private static final List<String> suffix = new ArrayList<String>();
   private static final JsonArray ERRORS = Json.createArray();
+  private static final JsonArray repeatInfo = Json.createArray();
+  private static final Map<String, String> repeatIdNames = new HashMap<>();
   private static final List<String> catagories = Arrays.asList("活动设计", "文学作品", "说明文字", "背景知识",
       "乐谱", "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "游戏", "音频", "音效");
 
@@ -71,54 +73,72 @@ public class InitDataFormExcel {
         if (check) {
           // 判断文件属性是否缺失
           if (list.size() < 11) {
-            ERRORS.push("alert 第" + i + "行文件属性缺失[文件编号|文件显示名称|文件路径|素材类别|搜索一级分类]都不能为空");
+            ERRORS.push("error 第" + i + "行文件属性缺失[文件编号|文件显示名称|文件路径|素材类别|搜索一级分类]都不能为空");
           }
 
           // 判断文件编号是否存在
           if (list.get(0) == null || list.get(0).trim().equals("")) {
-            ERRORS.push("alert 第" + i + "行文件编号不能为空");
+            ERRORS.push("error 第" + i + "行文件编号不能为空");
           }
 
           // 判断文件显示名称是否存在
           if (list.get(1) == null || list.get(1).trim().equals("")) {
-            ERRORS.push("alert 第" + i + "行文件显示名称不能为空");
+            ERRORS.push("error 第" + i + "行文件显示名称不能为空");
+          }
+
+          // 检测ID和文件名的重复性
+          if (list.get(0) != null && list.get(1) != null) {
+            if (repeatIdNames.containsKey((list.get(0)))) {
+              ERRORS.push("error 第" + i + "行文件编号已经存在");
+            }
+            if (repeatIdNames.containsValue((list.get(1)))) {
+              repeatInfo.push("alert 第" + i + "行文件名称有重复");
+            }
+            repeatIdNames.put(list.get(0), list.get(1));
           }
 
           // 判断文件后缀是否合法
           if (list.get(2) == null
               || !suffix.contains(list.get(2).trim().substring(list.get(2).trim().lastIndexOf("."),
                   list.get(2).trim().length()))) {
-            ERRORS.push("alert 第" + i + "行文件后缀无效");
+            ERRORS.push("error 第" + i + "行文件后缀无效");
           }
 
           // 判断文件属性路径是否存在
           if (!new File(root.getPath() + list.get(2)).exists()) {
             System.out.println();
-            ERRORS.push("alert 第" + i + "行文件路径" + list.get(2) + "不存在");
+            ERRORS.push("error 第" + i + "行文件路径" + list.get(2) + "不存在");
           }
 
           // 判断文件缩略图是否存在
           if (list.get(3) != null && !new File(root.getPath() + list.get(3)).exists()) {
-            ERRORS.push("alert 第" + i + "行缩略图路径" + list.get(3) + "不存在");
+            ERRORS.push("error 第" + i + "行缩略图路径" + list.get(3) + "不存在");
           }
 
           // 判断文件素材类别
           if (list.get(4) == null || !catagories.contains(list.get(4))) {
-            ERRORS.push("alert 第" + i + "行素材类别" + list.get(4) + "不存在，或素材类别不再19个分类中");
+            ERRORS.push("error 第" + i + "行素材类别" + list.get(4) + "不存在，或素材类别不再19个分类中");
           }
 
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
           if (list.get(10) == null || !mime.containsKey(list.get(10))) {
-            ERRORS.push("alert 第" + i + "行一级搜索和二级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中");
+            ERRORS.push("error 第" + i + "行一级搜索和二级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中");
           }
         }
       }
+
+      // 打印警告
+      for (int i = 0; i < repeatInfo.length(); i++) {
+        System.out.println(repeatInfo.getString(i));
+      }
+      System.out.println("\r\n==========EXCEL文件采集信息出现以上警告，请确认数据的正确性=======\r\n ");
 
       if (ERRORS.length() > 0) {
         for (int i = 0; i < ERRORS.length(); i++) {
           System.out.println(ERRORS.getString(i));
         }
         System.out.println("\r\n==========EXCEL文件采集信息出现以上错误，数据初始化终止=======\r\n ");
+
       } else {
         for (int i = 0; i < rows; i++) {
           if (i == 0) {

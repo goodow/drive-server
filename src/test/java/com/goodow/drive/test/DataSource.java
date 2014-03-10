@@ -66,6 +66,9 @@ public class DataSource {
   }
 
   public static void main(String[] args) throws IOException {
+    if (insertingFiles.length() <= 0 || insertingTags.length() <= 0) {
+      return;
+    }
     final Bus bus =
         new WebSocketBusClient("ws://data.goodow.com:8080/eventbus/websocket", Json.createObject()
             .set("forkLocal", true));
