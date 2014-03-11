@@ -34,7 +34,8 @@ public class InitDataFormExcel {
   private static final JsonArray repeatInfo = Json.createArray();
   private static final Map<String, String> repeatIdNames = new HashMap<>();
   private static final List<String> catagories = Arrays.asList("活动设计", "文学作品", "说明文字", "背景知识",
-      "乐谱", "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "游戏", "音频", "音效");
+      "乐谱", "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "音频", "音效");
+  private static final Map<String, List<String>> searchGradeRelation = new HashMap<>();
 
   static {
     mime.put("mp3", "audio/mpeg");
@@ -55,6 +56,18 @@ public class InitDataFormExcel {
     suffix.add(".swf");
     suffix.add(".jpeg");
     suffix.add(".jpg");
+
+    searchGradeRelation.put("文本", Arrays
+        .asList(new String[] {"活动设计", "文学作品", "说明文字", "背景知识", "乐谱"}));
+
+    searchGradeRelation.put("图片", Arrays.asList(new String[] {
+        "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌"}));
+
+    searchGradeRelation.put("动画", Arrays.asList(new String[] {"动画", "电子书"}));
+
+    searchGradeRelation.put("视频", Arrays.asList(new String[] {"视频"}));
+
+    searchGradeRelation.put("音频", Arrays.asList(new String[] {"音频", "音效"}));
 
     try {
       URL url = InitDataFormExcel.class.getResource("/EXCEL.xlsx");
@@ -122,7 +135,17 @@ public class InitDataFormExcel {
 
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
           if (list.get(10) == null || !mime.containsKey(list.get(10))) {
-            ERRORS.push("error 第" + i + "行一级搜索和二级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中");
+            ERRORS.push("error 第" + i
+                + "行一级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
+          } else {
+            if (list.size() > 11 && list.get(11) != null) {
+              // 有二级分类
+              if (!searchGradeRelation.get(list.get(10)).contains(list.get(11))) {
+                // 但和一级分类不符合
+                ERRORS.push("error 第" + i
+                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
+              }
+            }
           }
         }
       }
