@@ -3,7 +3,7 @@ package com.goodow.drive.test;
 import com.goodow.realtime.channel.Bus;
 import com.goodow.realtime.channel.Message;
 import com.goodow.realtime.channel.MessageHandler;
-import com.goodow.realtime.channel.impl.WebSocketBusClient;
+import com.goodow.realtime.channel.impl.WebSocketBus;
 import com.goodow.realtime.java.JavaPlatform;
 import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class DataSource {
   private static final Logger log = Logger.getLogger(DataSource.class.getName());
-  private static final String sid = "sid.drive.db";
+  private static final String sid = "00:22:f4:cf:1a:1f.drive.db";// 提示：sid已经修改为mac
 
   // //模拟数据
   // private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
@@ -70,8 +70,8 @@ public class DataSource {
       return;
     }
     final Bus bus =
-        new WebSocketBusClient("ws://data.goodow.com:8080/eventbus/websocket", Json.createObject()
-            .set("forkLocal", true));
+        new WebSocketBus("ws://data.goodow.com:8080/eventbus/websocket", Json.createObject().set(
+            "forkLocal", true));
 
     bus.registerHandler(Bus.LOCAL_ON_OPEN, new MessageHandler<JsonObject>() {
       @Override

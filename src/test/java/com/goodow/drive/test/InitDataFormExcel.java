@@ -151,10 +151,12 @@ public class InitDataFormExcel {
       }
 
       // 打印警告
-      for (int i = 0; i < repeatInfo.length(); i++) {
-        System.out.println(repeatInfo.getString(i));
+      if (repeatInfo.length() > 0) {
+        for (int i = 0; i < repeatInfo.length(); i++) {
+          System.out.println(repeatInfo.getString(i));
+        }
+        System.out.println("\r\n==========EXCEL文件采集信息出现以上警告，请确认数据的正确性=======\r\n ");
       }
-      System.out.println("\r\n==========EXCEL文件采集信息出现以上警告，请确认数据的正确性=======\r\n ");
 
       if (ERRORS.length() > 0) {
         for (int i = 0; i < ERRORS.length(); i++) {
