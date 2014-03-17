@@ -25,6 +25,7 @@ public class InitDataFormExcel {
   public static final JsonArray TABLE_FILE_DATA = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
   private static boolean check = true;// 标记要不要校验文件属性
+  private static boolean replace = true;// 标记要不要本地替换文件模拟路径
   private static final String SD1_PATH = "/mnt/external_sd";// 真实的sd1路径
   private static final String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
   private static final String VIR1_PATH = "attachments/sd1";// 模拟的sd1路径
@@ -34,7 +35,7 @@ public class InitDataFormExcel {
   private static final JsonArray repeatInfo = Json.createArray();
   private static final Map<String, String> repeatIdNames = new HashMap<>();
   private static final List<String> catagories = Arrays.asList("活动设计", "文学作品", "说明文字", "背景知识",
-      "乐谱", "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "音频", "音效");
+      "乐谱", "教学图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "音频", "音效");
   private static final Map<String, List<String>> searchGradeRelation = new HashMap<>();
 
   static {
@@ -44,9 +45,10 @@ public class InitDataFormExcel {
     mime.put("swf", "application/x-shockwave-flash");
     mime.put("jpeg", "image/jpeg");
     mime.put("jpg", "image/jpeg");
-    mime.put("文本", "application/pdf");
+    mime.put("活动设计", "application/pdf");
     mime.put("图片", "image/jpeg");
     mime.put("动画", "application/x-shockwave-flash");
+    mime.put("电子书", "application/x-shockwave-flash");
     mime.put("视频", "video/mp4");
     mime.put("音频", "audio/mpeg");
 
@@ -57,17 +59,18 @@ public class InitDataFormExcel {
     suffix.add(".jpeg");
     suffix.add(".jpg");
 
-    searchGradeRelation.put("文本", Arrays
-        .asList(new String[] {"活动设计", "文学作品", "说明文字", "背景知识", "乐谱"}));
+    searchGradeRelation.put("活动设计", Arrays.asList(new String[] {
+        "健康", "语言", "社会", "数学", "科学", "艺术(美术)", "艺术(音乐)"}));
 
     searchGradeRelation.put("图片", Arrays.asList(new String[] {
-        "图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌"}));
+        "教学图片", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌"}));
 
-    searchGradeRelation.put("动画", Arrays.asList(new String[] {"动画", "电子书"}));
+    searchGradeRelation.put("动画", Arrays
+        .asList(new String[] {"文学作品动画", "音乐作品动画", "数学教学动画", "其他动画"}));
 
-    searchGradeRelation.put("视频", Arrays.asList(new String[] {"视频"}));
+    searchGradeRelation.put("视频", Arrays.asList(new String[] {"教学用视频", "教学示范课", "音乐表演视频"}));
 
-    searchGradeRelation.put("音频", Arrays.asList(new String[] {"音频", "音效"}));
+    searchGradeRelation.put("音频", Arrays.asList(new String[] {"音乐作品音频", "文学作品音频", "音效"}));
 
     try {
       URL url = InitDataFormExcel.class.getResource("/EXCEL.xlsx");
@@ -101,13 +104,13 @@ public class InitDataFormExcel {
 
           // 检测ID和文件名的重复性
           if (list.get(0) != null && list.get(1) != null) {
-            if (repeatIdNames.containsKey((list.get(0)))) {
+            if (repeatIdNames.containsKey((list.get(0).trim()))) {
               ERRORS.push("error 第" + i + "行文件编号已经存在");
             }
-            if (repeatIdNames.containsValue((list.get(1)))) {
+            if (repeatIdNames.containsValue((list.get(1).trim()))) {
               repeatInfo.push("alert 第" + i + "行文件名称有重复");
             }
-            repeatIdNames.put(list.get(0), list.get(1));
+            repeatIdNames.put(list.get(0).trim(), list.get(1).trim());
           }
 
           // 判断文件后缀是否合法
@@ -118,29 +121,28 @@ public class InitDataFormExcel {
           }
 
           // 判断文件属性路径是否存在
-          if (!new File(root.getPath() + list.get(2)).exists()) {
-            System.out.println();
-            ERRORS.push("error 第" + i + "行文件路径" + list.get(2) + "不存在");
+          if (!new File(root.getPath() + list.get(2).trim()).exists()) {
+            ERRORS.push("error 第" + i + "行文件路径" + list.get(2).trim() + "不存在");
           }
 
           // 判断文件缩略图是否存在
-          if (list.get(3) != null && !new File(root.getPath() + list.get(3)).exists()) {
-            ERRORS.push("error 第" + i + "行缩略图路径" + list.get(3) + "不存在");
+          if (list.get(3) != null && !new File(root.getPath() + list.get(3).trim()).exists()) {
+            ERRORS.push("error 第" + i + "行缩略图路径" + list.get(3).trim() + "不存在");
           }
 
           // 判断文件素材类别
-          if (list.get(4) == null || !catagories.contains(list.get(4))) {
-            ERRORS.push("error 第" + i + "行素材类别" + list.get(4) + "不存在，或素材类别不再19个分类中");
+          if (list.get(4) == null || !catagories.contains(list.get(4).trim())) {
+            ERRORS.push("error 第" + i + "行素材类别" + list.get(4).trim() + "不存在，或素材类别不再19个分类中");
           }
 
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
-          if (list.get(10) == null || !mime.containsKey(list.get(10))) {
+          if (list.get(10) == null || !mime.containsKey(list.get(10).trim())) {
             ERRORS.push("error 第" + i
                 + "行一级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
           } else {
             if (list.size() > 11 && list.get(11) != null) {
               // 有二级分类
-              if (!searchGradeRelation.get(list.get(10)).contains(list.get(11))) {
+              if (!searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
                 // 但和一级分类不符合
                 ERRORS.push("error 第" + i
                     + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
@@ -163,7 +165,6 @@ public class InitDataFormExcel {
           System.out.println(ERRORS.getString(i));
         }
         System.out.println("\r\n==========EXCEL文件采集信息出现以上错误，数据初始化终止=======\r\n ");
-
       } else {
         for (int i = 0; i < rows; i++) {
           if (i == 0) {
@@ -176,13 +177,19 @@ public class InitDataFormExcel {
           JsonObject file = Json.createObject();
           file.set(Constant.KEY_ID, list.get(0).trim());// 编号
           file.set(Constant.KEY_NAME, list.get(1).trim());// 文件名称
-          // file.set(Constant.KEY_URL, getTruePath(list.get(2).trim()));// 文件路径
-          file.set(Constant.KEY_URL, list.get(2).trim());
+          if (replace) {
+            file.set(Constant.KEY_URL, getTruePath(list.get(2).trim()));// 文件路径
+          } else {
+            file.set(Constant.KEY_URL, list.get(2).trim());
+          }
           file.set(Constant.KEY_CONTENTLENGTH, getContentLenght(list.get(2).trim()));// 文件长度
           file.set(Constant.KEY_CONTENTTYPE, getContentTypeBySuffix(list.get(2).trim()));// 文件contentType
           if (list.size() > 3 && list.get(3) != null) {
-            // file.set(Constant.KEY_THUMBNAIL, getTruePath(list.get(3).trim()));// 缩略图路径
-            file.set(Constant.KEY_THUMBNAIL, list.get(3).trim());
+            if (replace) {
+              file.set(Constant.KEY_THUMBNAIL, getTruePath(list.get(3).trim()));// 缩略图路径
+            } else {
+              file.set(Constant.KEY_THUMBNAIL, list.get(3).trim());
+            }
           }
           TABLE_FILE_DATA.push(file);
 
@@ -211,7 +218,7 @@ public class InitDataFormExcel {
               }
             } else {
               // 如果除搜索关键字外的标签含有四位编号就去掉
-              String tag = list.get(j);
+              String tag = list.get(j).trim();
               if (tag.matches("^\\d{4}.*")) {
                 tag = tag.substring(4, tag.length());
               }
@@ -234,8 +241,8 @@ public class InitDataFormExcel {
                   tag = tag.substring(4, tag.length());
                 }
                 JsonObject relationTag =
-                    Json.createObject().set(Constant.KEY_TYPE, "tag").set(Constant.KEY_KEY, tag)
-                        .set(Constant.KEY_LABEL, list.get(j).trim());
+                    Json.createObject().set(Constant.KEY_TYPE, "tag").set(Constant.KEY_KEY,
+                        tag.trim()).set(Constant.KEY_LABEL, list.get(j).trim());
                 TABLE_RELATION_DATA.push(relationTag);
               }
             }

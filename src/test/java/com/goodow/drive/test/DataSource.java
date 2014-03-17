@@ -15,7 +15,9 @@ import java.util.logging.Logger;
 
 public class DataSource {
   private static final Logger log = Logger.getLogger(DataSource.class.getName());
-  private static final String sid = "00:22:f4:cf:1a:1f.drive.db";// 提示：sid已经修改为mac
+  // private static final String sid = "00:22:f4:cf:1a:1f.drive.db";// 提示：sid已经修改为mac
+  private static final String sid = "dan0315sid.drive.db";// 提示：sid已经修改为mac
+  // private static final String sid = "sid.drive.db.lei.123456";// 提示：sid已经修改为mac
 
   // //模拟数据
   // private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
@@ -25,7 +27,7 @@ public class DataSource {
   private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
   private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
 
-  private static final int num = 300;
+  private static final int num = 200;
   private static final JsonArray insertingFiles = Json.createArray();
   private static final JsonArray insertingTags = Json.createArray();
 
@@ -151,7 +153,7 @@ public class DataSource {
         if (message.body().has(Constant.KEY_STATUS)
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
           SUCCESS_TAG_COUNTER = SUCCESS_TAG_COUNTER + tag.getArray("data").length();
-          System.out.println("当前插入文件数据量：" + SUCCESS_TAG_COUNTER + "/" + tagsDataTemp.length());
+          System.out.println("当前插入对应关系数据量：" + SUCCESS_TAG_COUNTER + "/" + tagsDataTemp.length());
           if (SUCCESS_TAG_COUNTER % num == 0) {
             JsonObject relation =
                 Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
