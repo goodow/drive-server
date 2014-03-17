@@ -136,9 +136,11 @@ public class InitDataFormExcel {
           }
 
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
+          if (list.get(10) != null && catagories.contains(list.get(10).trim())) {
+            ERRORS.push("error 第" + i + "行一级搜索不合格，一级搜索不能在" + catagories.toString() + "中");
+          }
           if (list.get(10) == null || !mime.containsKey(list.get(10).trim())) {
-            ERRORS.push("error 第" + i
-                + "行一级搜索不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
+            ERRORS.push("error 第" + i + "行一级搜索不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中");
           } else {
             if (list.size() > 11 && list.get(11) != null) {
               // 有二级分类
@@ -146,6 +148,12 @@ public class InitDataFormExcel {
                 // 但和一级分类不符合
                 ERRORS.push("error 第" + i
                     + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
+              }
+
+              if (list.get(4) != null && !list.get(11).trim().equals(list.get(4))
+                  && catagories.contains(list.get(11).trim())) {
+                // 二级分类和素材类别不一样且二级分类又在18个类别中
+                ERRORS.push("error 第" + i + "二级分类和素材类别不一样且二级分类又在18个类别中，会造成重复显示");
               }
             }
           }
@@ -276,7 +284,7 @@ public class InitDataFormExcel {
   }
 
   /**
-   * 获取文件MIME
+   * 通过后缀获取文件MIME
    */
   private static String getContentTypeBySuffix(String path) {
     path = path.substring(path.lastIndexOf(".") + 1, path.length());
