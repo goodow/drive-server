@@ -26,7 +26,7 @@ public class InitDataFormExcel {
   private static final Map<String, String> mime = new HashMap<String, String>();
   private static boolean check = true;// 标记要不要校验文件属性
   private static boolean replace = true;// 标记要不要本地替换文件模拟路径
-  private static final String SD1_PATH = "/mnt/external_sd";// 真实的sd1路径
+  private static final String SD1_PATH = "/mnt/sdcard";// 真实的sd1路径
   private static final String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
   private static final String VIR1_PATH = "attachments/sd1";// 模拟的sd1路径
   private static final String VIR2_PATH = "attachments/sd2";// 模拟的sd2路径
@@ -37,6 +37,13 @@ public class InitDataFormExcel {
   private static final List<String> catagories = Arrays.asList("活动设计", "文学作品", "说明文字", "背景知识",
       "乐谱", "教学图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "音频", "音效");
   private static final Map<String, List<String>> searchGradeRelation = new HashMap<>();
+  private static final List<String> themes = Arrays.asList("和谐", "托班", "示范课", "入学准备", "安全教育",
+      "早期阅读");
+  private static final List<String> grades = Arrays.asList("小班", "中班", "大班", "学前班");
+  private static final List<String> terms = Arrays.asList("上学期", "下学期");
+  private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
+      "艺术(美术)", "我有一个幼儿园", "找找,藏藏", "飘飘,跳跳,滚滚", "我会......", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色",
+      "暖暖的......", "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他");
 
   static {
     mime.put("mp3", "audio/mpeg");
@@ -60,7 +67,7 @@ public class InitDataFormExcel {
     suffix.add(".jpg");
 
     searchGradeRelation.put("活动设计", Arrays.asList(new String[] {
-        "健康", "语言", "社会", "数学", "科学", "艺术(美术)", "艺术(音乐)"}));
+        "健康", "托班", "语言", "社会", "数学", "科学", "艺术(美术)", "艺术(音乐)"}));
 
     searchGradeRelation.put("图片", Arrays.asList(new String[] {
         "教学图片", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌"}));
@@ -135,9 +142,29 @@ public class InitDataFormExcel {
             ERRORS.push("error 第" + i + "行素材类别" + list.get(4).trim() + "不存在，或素材类别不再19个分类中");
           }
 
+          // 第5列是主题分类 第6列是班级 第7列是学期 第8列是主题或领域
+          if (list.get(5) != null && !themes.contains(list.get(5).trim())) {
+            ERRORS.push("error 第" + i + "行主题[" + list.get(5).trim() + "]不在" + themes.toString()
+                + "中");
+          }
+          if (list.get(6) != null && !grades.contains(list.get(6).trim())) {
+            ERRORS.push("error 第" + i + "行班级[" + list.get(6).trim() + "]不在" + grades.toString()
+                + "中");
+          }
+          if (list.get(7) != null && !terms.contains(list.get(7).trim())) {
+            ERRORS.push("error 第" + i + "行学期[" + list.get(7).trim() + "]不在" + terms.toString()
+                + "中");
+          }
+          if (list.get(8) != null && !topics.contains(list.get(8).trim())) {
+            ERRORS.push("error 第" + i + "行领域[" + list.get(8).trim() + "]不在" + topics.toString()
+                + "中");
+          }
+
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
-          if (list.get(10) != null && catagories.contains(list.get(10).trim())) {
-            ERRORS.push("error 第" + i + "行一级搜索不合格，一级搜索不能在" + catagories.toString() + "中");
+          if (list.get(10) != null && catagories.contains(list.get(10).trim())
+              && list.get(4) != null && !list.get(10).trim().equals(list.get(4).trim())) {
+            ERRORS.push("error 第" + i + "行一级搜索不合格，一级搜索在" + catagories.toString()
+                + "中时,要和素材类别一致,否则会造成重复显示");
           }
           if (list.get(10) == null || !mime.containsKey(list.get(10).trim())) {
             ERRORS.push("error 第" + i + "行一级搜索不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中");
@@ -147,7 +174,7 @@ public class InitDataFormExcel {
               if (!searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
                 // 但和一级分类不符合
                 ERRORS.push("error 第" + i
-                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[文本/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
+                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
               }
 
               if (list.get(4) != null && !list.get(11).trim().equals(list.get(4))

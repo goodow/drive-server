@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class DataSource {
   private static final Logger log = Logger.getLogger(DataSource.class.getName());
-  private static final String sid = "00:22:f4:cf:1a:1f.drive.db";// 提示：sid已经修改为mac
+  private static final String sid = "sidxxx.drive.db";// 提示：sid已经修改为mac
 
   // //模拟数据
   // private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
@@ -25,7 +25,7 @@ public class DataSource {
   private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
   private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
 
-  private static final int num = 100;
+  private static final int num = 200;
   private static final JsonArray insertingFiles = Json.createArray();
   private static final JsonArray insertingTags = Json.createArray();
 
