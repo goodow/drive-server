@@ -25,7 +25,8 @@ public class DataSource {
   private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
   private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
 
-  private static final int num = 200;
+  private static final int numFile = 200;// 文件分批数值
+  private static final int numRelation = 1000;// 对应关系分批数值
   private static final JsonArray insertingFiles = Json.createArray();
   private static final JsonArray insertingTags = Json.createArray();
 
@@ -36,30 +37,31 @@ public class DataSource {
     JavaPlatform.register();
     // 分组文件表数据
     int timer_file =
-        filesDataTemp.length() % num == 0 ? filesDataTemp.length() / num : filesDataTemp.length()
-            / num + 1;
+        filesDataTemp.length() % numFile == 0 ? filesDataTemp.length() / numFile : filesDataTemp
+            .length()
+            / numFile + 1;
     for (int i = 0; i < timer_file; i++) {
       JsonArray temp = Json.createArray();
-      for (int j = 0; j < num; j++) {
-        if (num * i + j >= filesDataTemp.length()) {
+      for (int j = 0; j < numFile; j++) {
+        if (numFile * i + j >= filesDataTemp.length()) {
           break;
         }
-        temp.push(filesDataTemp.getObject(num * i + j));
+        temp.push(filesDataTemp.getObject(numFile * i + j));
       }
       insertingFiles.push(temp);
     }
 
     // 分组文件表数据
     int timer_tag =
-        tagsDataTemp.length() % num == 0 ? tagsDataTemp.length() / num : tagsDataTemp.length()
-            / num + 1;
+        tagsDataTemp.length() % numRelation == 0 ? tagsDataTemp.length() / numRelation
+            : tagsDataTemp.length() / numRelation + 1;
     for (int i = 0; i < timer_tag; i++) {
       JsonArray temp = Json.createArray();
-      for (int j = 0; j < num; j++) {
-        if (num * i + j >= tagsDataTemp.length()) {
+      for (int j = 0; j < numRelation; j++) {
+        if (numRelation * i + j >= tagsDataTemp.length()) {
           break;
         }
-        temp.push(tagsDataTemp.getObject(num * i + j));
+        temp.push(tagsDataTemp.getObject(numRelation * i + j));
       }
       insertingTags.push(temp);
     }
@@ -106,10 +108,10 @@ public class DataSource {
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
           SUCCESS_FILE_COUNTER = SUCCESS_FILE_COUNTER + tag.getArray("data").length();
           System.out.println("当前插入文件数据量：" + SUCCESS_FILE_COUNTER + "/" + filesDataTemp.length());
-          if (SUCCESS_FILE_COUNTER % num == 0) {
+          if (SUCCESS_FILE_COUNTER % numFile == 0) {
             JsonObject file =
                 Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
-                    insertingFiles.getArray(SUCCESS_FILE_COUNTER / num));
+                    insertingFiles.getArray(SUCCESS_FILE_COUNTER / numFile));
             file(bus, file);
           } else {
             System.out.println("\r\n 插入文件测试数据完毕");
@@ -153,10 +155,10 @@ public class DataSource {
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
           SUCCESS_TAG_COUNTER = SUCCESS_TAG_COUNTER + tag.getArray("data").length();
           System.out.println("当前插入对应关系数据量：" + SUCCESS_TAG_COUNTER + "/" + tagsDataTemp.length());
-          if (SUCCESS_TAG_COUNTER % num == 0) {
+          if (SUCCESS_TAG_COUNTER % numRelation == 0) {
             JsonObject relation =
                 Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
-                    insertingTags.getArray(SUCCESS_TAG_COUNTER / num));
+                    insertingTags.getArray(SUCCESS_TAG_COUNTER / numRelation));
             relation(bus, relation);
           } else {
             System.out.println("\r\n 插入标签测试数据完毕");

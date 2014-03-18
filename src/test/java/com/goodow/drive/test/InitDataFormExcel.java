@@ -34,16 +34,17 @@ public class InitDataFormExcel {
   private static final JsonArray ERRORS = Json.createArray();
   private static final JsonArray repeatInfo = Json.createArray();
   private static final Map<String, String> repeatIdNames = new HashMap<>();
-  private static final List<String> catagories = Arrays.asList("活动设计", "文学作品", "说明文字", "背景知识",
-      "乐谱", "教学图片", "动态图", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌", "动画", "电子书", "视频", "音频", "音效");
+  private static final List<String> catagories = Arrays.asList("素材-活动设计", "素材-文学作品", "素材-说明文字",
+      "素材-背景知识", "素材-乐谱", "素材-教学图片", "素材-动态图", "素材-参考图", "素材-挂图", "素材-轮廓图", "素材-头饰", "素材-手偶",
+      "素材-胸牌", "素材-动画", "素材-电子书", "素材-视频", "素材-音频", "素材-音效");
   private static final Map<String, List<String>> searchGradeRelation = new HashMap<>();
   private static final List<String> themes = Arrays.asList("和谐", "托班", "示范课", "入学准备", "安全教育",
       "早期阅读");
   private static final List<String> grades = Arrays.asList("小班", "中班", "大班", "学前班");
   private static final List<String> terms = Arrays.asList("上学期", "下学期");
   private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
-      "艺术(美术)", "我有一个幼儿园", "找找,藏藏", "飘飘,跳跳,滚滚", "我会......", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色",
-      "暖暖的......", "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他");
+      "艺术(美术)", "我有一个幼儿园", "找找,藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色", "暖暖的……",
+      "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他");
 
   static {
     mime.put("mp3", "audio/mpeg");
@@ -174,7 +175,7 @@ public class InitDataFormExcel {
               if (!searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
                 // 但和一级分类不符合
                 ERRORS.push("error 第" + i
-                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频]中，且对应关系是否符合19个分类图中的对应关系");
+                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中，且对应关系是否符合19个分类图中的对应关系");
               }
 
               if (list.get(4) != null && !list.get(11).trim().equals(list.get(4))
