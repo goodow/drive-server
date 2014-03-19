@@ -4,17 +4,20 @@ import com.goodow.realtime.channel.Bus;
 import com.goodow.realtime.channel.Message;
 import com.goodow.realtime.channel.MessageHandler;
 import com.goodow.realtime.channel.impl.WebSocketBus;
-import com.goodow.realtime.java.JavaPlatform;
 import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
+import com.goodow.realtime.server.VertxPlatform;
 
-import java.io.IOException;
+import org.junit.Test;
+import org.vertx.testtools.TestVerticle;
+import org.vertx.testtools.VertxAssert;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DataSource {
-  private static final Logger log = Logger.getLogger(DataSource.class.getName());
+public class DataImportTest extends TestVerticle {
+  private static final Logger log = Logger.getLogger(DataImportTest.class.getName());
   private static final String sid = "sidxxx.drive.db";// 提示：sid已经修改为mac
 
   // //模拟数据
@@ -32,73 +35,6 @@ public class DataSource {
 
   private static int SUCCESS_FILE_COUNTER = 0;
   private static int SUCCESS_TAG_COUNTER = 0;
-
-  static {
-    JavaPlatform.register();
-    // 分组文件表数据
-    int timer_file =
-        filesDataTemp.length() % numFile == 0 ? filesDataTemp.length() / numFile : filesDataTemp
-            .length()
-            / numFile + 1;
-    for (int i = 0; i < timer_file; i++) {
-      JsonArray temp = Json.createArray();
-      for (int j = 0; j < numFile; j++) {
-        if (numFile * i + j >= filesDataTemp.length()) {
-          break;
-        }
-        temp.push(filesDataTemp.getObject(numFile * i + j));
-      }
-      insertingFiles.push(temp);
-    }
-
-    // 分组文件表数据
-    int timer_tag =
-        tagsDataTemp.length() % numRelation == 0 ? tagsDataTemp.length() / numRelation
-            : tagsDataTemp.length() / numRelation + 1;
-    for (int i = 0; i < timer_tag; i++) {
-      JsonArray temp = Json.createArray();
-      for (int j = 0; j < numRelation; j++) {
-        if (numRelation * i + j >= tagsDataTemp.length()) {
-          break;
-        }
-        temp.push(tagsDataTemp.getObject(numRelation * i + j));
-      }
-      insertingTags.push(temp);
-    }
-  }
-
-  public static void main(String[] args) throws IOException {
-    if (filesDataTemp.length() <= 0 || tagsDataTemp.length() <= 0) {
-      return;
-    }
-    System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length());
-    final Bus bus =
-        new WebSocketBus("ws://data.goodow.com:8080/eventbus/websocket", Json.createObject().set(
-            "forkLocal", true));
-
-    bus.registerHandler(Bus.LOCAL_ON_OPEN, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        handlerEventBusOpened(bus);
-      }
-    });
-    bus.registerHandler(Bus.LOCAL_ON_CLOSE, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        log.info("EventBus closed");
-        System.exit(0);
-      }
-    });
-    bus.registerHandler(Bus.LOCAL_ON_ERROR, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        log.log(Level.SEVERE, "EventBus Error");
-      }
-    });
-
-    // Prevent the JVM from exiting
-    System.in.read();
-  }
 
   private static void file(final Bus bus, final JsonObject tag) {
     bus.send(sid, tag, new MessageHandler<JsonObject>() {
@@ -168,6 +104,80 @@ public class DataSource {
         }
       }
     });
+  }
+
+  @Test
+  public void importData() {
+    if (filesDataTemp.length() <= 0 || tagsDataTemp.length() <= 0) {
+      return;
+    }
+    System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length());
+    final Bus bus =
+        new WebSocketBus("ws://data.goodow.com:8080/eventbus/websocket", Json.createObject().set(
+            "forkLocal", true));
+
+    bus.registerHandler(Bus.LOCAL_ON_OPEN, new MessageHandler<JsonObject>() {
+      @Override
+      public void handle(Message<JsonObject> message) {
+        handlerEventBusOpened(bus);
+      }
+    });
+    bus.registerHandler(Bus.LOCAL_ON_CLOSE, new MessageHandler<JsonObject>() {
+      @Override
+      public void handle(Message<JsonObject> message) {
+        log.info("EventBus closed");
+        VertxAssert.testComplete();
+      }
+    });
+    bus.registerHandler(Bus.LOCAL_ON_ERROR, new MessageHandler<JsonObject>() {
+      @Override
+      public void handle(Message<JsonObject> message) {
+        log.log(Level.SEVERE, "EventBus Error");
+      }
+    });
+  }
+
+  @Override
+  public void start() {
+    initialize();
+    VertxPlatform.register(vertx);
+
+    setUp();
+
+    startTests();
+  }
+
+  private void setUp() {
+    // 分组文件表数据
+    int timer_file =
+        filesDataTemp.length() % numFile == 0 ? filesDataTemp.length() / numFile : filesDataTemp
+            .length()
+            / numFile + 1;
+    for (int i = 0; i < timer_file; i++) {
+      JsonArray temp = Json.createArray();
+      for (int j = 0; j < numFile; j++) {
+        if (numFile * i + j >= filesDataTemp.length()) {
+          break;
+        }
+        temp.push(filesDataTemp.getObject(numFile * i + j));
+      }
+      insertingFiles.push(temp);
+    }
+
+    // 分组文件表数据
+    int timer_tag =
+        tagsDataTemp.length() % numRelation == 0 ? tagsDataTemp.length() / numRelation
+            : tagsDataTemp.length() / numRelation + 1;
+    for (int i = 0; i < timer_tag; i++) {
+      JsonArray temp = Json.createArray();
+      for (int j = 0; j < numRelation; j++) {
+        if (numRelation * i + j >= tagsDataTemp.length()) {
+          break;
+        }
+        temp.push(tagsDataTemp.getObject(numRelation * i + j));
+      }
+      insertingTags.push(temp);
+    }
   }
 
 }
