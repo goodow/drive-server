@@ -50,10 +50,15 @@ public class DataImportTest extends TestVerticle {
                     insertingFiles.getArray(SUCCESS_FILE_COUNTER / numFile));
             file(bus, file);
           } else {
-            System.out.println("\r\n 插入文件测试数据完毕");
+            System.out.println("\r\n ======================插入文件测试数据完毕======================\r\n");
+            // 插入文件完毕后再插入对应关系
+            JsonObject relation =
+                Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
+                    insertingTags.getArray(0));
+            relation(bus, relation);
           }
         } else {
-          System.out.println("\r\n 插入文件测试数据失败");
+          System.out.println("\r\n ======================插入文件测试数据失败======================\r\n");
         }
       }
     });
@@ -65,19 +70,15 @@ public class DataImportTest extends TestVerticle {
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-          System.out.println("数据库数据清除成功，准备插入数据");
+          System.out
+              .println("\r\n======================数据库数据清除成功，准备插入数据======================\r\n");
           JsonObject file =
               Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
                   insertingFiles.getArray(0));
           file(bus, file);
-
-          JsonObject relation =
-              Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
-                  insertingTags.getArray(0));
-          relation(bus, relation);
-
         } else {
-          System.out.println("数据库数据清除失败，拒绝后续数据插入");
+          System.out
+              .println("\r\n======================数据库数据清除失败，拒绝后续数据插入======================\r\n");
         }
       }
     });
@@ -97,10 +98,12 @@ public class DataImportTest extends TestVerticle {
                     insertingTags.getArray(SUCCESS_TAG_COUNTER / numRelation));
             relation(bus, relation);
           } else {
-            System.out.println("\r\n 插入标签测试数据完毕");
+            System.out.println("\r\n ======================插入标签测试数据完毕======================\r\n");
+            System.out.println("\r\n =========================数据初始化成功======================\r\n");
+            VertxAssert.testComplete();
           }
         } else {
-          System.out.println("\r\n 插入标签映射测试数据失败");
+          System.out.println("\r\n ======================插入标签映射测试数据失败======================\r\n");
         }
       }
     });
