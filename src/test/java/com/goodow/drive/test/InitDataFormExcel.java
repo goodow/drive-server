@@ -81,7 +81,7 @@ public class InitDataFormExcel {
     searchGradeRelation.put("音频", Arrays.asList(new String[] {"音乐作品音频", "文学作品音频", "音效"}));
 
     try {
-      URL url = InitDataFormExcel.class.getResource("/EXCEL.xlsx");
+      URL url = InitDataFormExcel.class.getResource("/data.xlsx");
       URL root = InitDataFormExcel.class.getResource("/");
       List<List<String>> data = ExcelData.getExcelData(url.getPath());
       int rows = data.size();

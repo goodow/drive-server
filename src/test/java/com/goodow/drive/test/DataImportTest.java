@@ -59,6 +59,7 @@ public class DataImportTest extends TestVerticle {
           }
         } else {
           System.out.println("\r\n ======================插入文件测试数据失败======================\r\n");
+          VertxAssert.testComplete();
         }
       }
     });
@@ -79,6 +80,7 @@ public class DataImportTest extends TestVerticle {
         } else {
           System.out
               .println("\r\n======================数据库数据清除失败，拒绝后续数据插入======================\r\n");
+          VertxAssert.testComplete();
         }
       }
     });
@@ -104,6 +106,7 @@ public class DataImportTest extends TestVerticle {
           }
         } else {
           System.out.println("\r\n ======================插入标签映射测试数据失败======================\r\n");
+          VertxAssert.testComplete();
         }
       }
     });
@@ -112,6 +115,9 @@ public class DataImportTest extends TestVerticle {
   @Test
   public void importData() {
     if (filesDataTemp.length() <= 0 || tagsDataTemp.length() <= 0) {
+      System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length()
+          + "   数据不完整");
+      VertxAssert.testComplete();
       return;
     }
     System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length());
