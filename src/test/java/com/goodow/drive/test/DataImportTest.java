@@ -18,18 +18,19 @@ import java.util.logging.Logger;
 
 public class DataImportTest extends TestVerticle {
   private static final Logger log = Logger.getLogger(DataImportTest.class.getName());
-  private static final String sid = "sidxxx.drive.db";// 提示：sid已经修改为mac
+  private static String sid = "sid";// 提示：sid已经修改为mac
+  private static final String address = ".drive.db";
 
   // //模拟数据
   // private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
   // private static final JsonArray filesDataTemp = InitData.FILE_TABLE_DATA;
 
   // 导入数据
-  private static final JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
-  private static final JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
+  private static JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
+  private static JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
 
-  private static final int numFile = 200;// 文件分批数值
-  private static final int numRelation = 1000;// 对应关系分批数值
+  private static int numFile = 200;// 文件分批数值
+  private static int numRelation = 1000;// 对应关系分批数值
   private static final JsonArray insertingFiles = Json.createArray();
   private static final JsonArray insertingTags = Json.createArray();
 
@@ -37,7 +38,7 @@ public class DataImportTest extends TestVerticle {
   private static int SUCCESS_TAG_COUNTER = 0;
 
   private static void file(final Bus bus, final JsonObject tag) {
-    bus.send(sid, tag, new MessageHandler<JsonObject>() {
+    bus.send(sid + address, tag, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
@@ -66,28 +67,29 @@ public class DataImportTest extends TestVerticle {
   }
 
   private static void handlerEventBusOpened(final Bus bus) {
-    bus.send(sid, Json.createObject().set("action", "delete"), new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        if (message.body().has(Constant.KEY_STATUS)
-            && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-          System.out
-              .println("\r\n======================数据库数据清除成功，准备插入数据======================\r\n");
-          JsonObject file =
-              Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
-                  insertingFiles.getArray(0));
-          file(bus, file);
-        } else {
-          System.out
-              .println("\r\n======================数据库数据清除失败，拒绝后续数据插入======================\r\n");
-          VertxAssert.testComplete();
-        }
-      }
-    });
+    bus.send(sid + address, Json.createObject().set("action", "delete"),
+        new MessageHandler<JsonObject>() {
+          @Override
+          public void handle(Message<JsonObject> message) {
+            if (message.body().has(Constant.KEY_STATUS)
+                && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
+              System.out
+                  .println("\r\n======================数据库数据清除成功，准备插入数据======================\r\n");
+              JsonObject file =
+                  Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
+                      insertingFiles.getArray(0));
+              file(bus, file);
+            } else {
+              System.out
+                  .println("\r\n======================数据库数据清除失败，拒绝后续数据插入======================\r\n");
+              VertxAssert.testComplete();
+            }
+          }
+        });
   }
 
   private static void relation(final Bus bus, final JsonObject tag) {
-    bus.send(sid, tag, new MessageHandler<JsonObject>() {
+    bus.send(sid + address, tag, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
@@ -151,8 +153,20 @@ public class DataImportTest extends TestVerticle {
     initialize();
     VertxPlatform.register(vertx);
 
-    setUp();
+    sid = System.getProperty("sid", "sid");
+    numFile = Integer.parseInt(System.getProperty("f", "200"));
+    numRelation = Integer.parseInt(System.getProperty("r", "1000"));
+    String sdCard1 = System.getProperty("sd1", "/mnt/sdcard");
+    String sdCard2 = System.getProperty("sd2", "/mnt/sdcard");
+    InitDataFormExcel.factory(sdCard1, sdCard2);
+    tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
+    filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
+    System.out
+        .println("命令样例:mvn clean test -D sid=mysid -D f=200 -D r=1000 -D sd1=mysd1 -D sd2=mysd2 \r\n");
+    System.out.println("输入参数：sid=" + sid + "  f=" + numFile + "  r=" + numRelation + "  sd1="
+        + sdCard1 + "   sd2=" + sdCard2 + "\r\n");
 
+    setUp();
     startTests();
   }
 

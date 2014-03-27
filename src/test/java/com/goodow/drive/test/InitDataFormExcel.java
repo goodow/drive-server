@@ -26,8 +26,8 @@ public class InitDataFormExcel {
   private static final Map<String, String> mime = new HashMap<String, String>();
   private static boolean check = true;// 标记要不要校验文件属性
   private static boolean replace = true;// 标记要不要本地替换文件模拟路径
-  private static final String SD1_PATH = "/mnt/sdcard";// 真实的sd1路径
-  private static final String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
+  private static String SD1_PATH = "/mnt/sdcard";// 真实的sd1路径
+  private static String SD2_PATH = "/mnt/sdcrad/sd2";// 真实的sd2路径
   private static final String VIR1_PATH = "attachments/sd1";// 模拟的sd1路径
   private static final String VIR2_PATH = "attachments/sd2";// 模拟的sd2路径
   private static final List<String> suffix = new ArrayList<String>();
@@ -80,6 +80,13 @@ public class InitDataFormExcel {
 
     searchGradeRelation.put("音频", Arrays.asList(new String[] {"音乐作品音频", "文学作品音频", "音效"}));
 
+    searchGradeRelation.put("电子书", Arrays.asList(new String[] {
+        "电子书1", "电子书2", "电子书3", "电子书4", "电子书5", "电子书6"}));
+  }
+
+  public static void factory(String sdCard1, String sdCard2) {
+    SD1_PATH = sdCard1;
+    SD2_PATH = sdCard2;
     try {
       URL url = InitDataFormExcel.class.getResource("/data.xlsx");
       URL root = InitDataFormExcel.class.getResource("/");
@@ -172,10 +179,11 @@ public class InitDataFormExcel {
           } else {
             if (list.size() > 11 && list.get(11) != null) {
               // 有二级分类
-              if (!searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
+              if (searchGradeRelation.get(list.get(10).trim()) == null
+                  || !searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
                 // 但和一级分类不符合
                 ERRORS.push("error 第" + i
-                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中，且对应关系是否符合19个分类图中的对应关系");
+                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中，且对应关系是否符合对应关系");
               }
 
               if (list.get(4) != null && !list.get(11).trim().equals(list.get(4))
@@ -290,7 +298,7 @@ public class InitDataFormExcel {
           if (list.size() >= 12 && list.get(10) != null && list.get(11) != null) {
             JsonObject relationTag =
                 Json.createObject().set(Constant.KEY_TYPE, "tag").set(Constant.KEY_KEY,
-                    list.get(11).trim()).set(Constant.KEY_LABEL, mime.get(list.get(10).trim()));
+                    list.get(11).trim()).set(Constant.KEY_LABEL, list.get(10).trim());
             TABLE_RELATION_DATA.push(relationTag);
           }
         }
