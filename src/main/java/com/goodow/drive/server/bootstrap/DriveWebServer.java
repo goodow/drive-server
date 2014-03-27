@@ -4,8 +4,9 @@ import com.alienos.guice.GuiceVertxBinding;
 import com.goodow.drive.server.attachment.DownloadHandler;
 import com.goodow.drive.server.attachment.FormUploadHandler;
 
-import com.goodow.realtime.server.ChannelModule;
-import com.goodow.realtime.server.ChannelWebServer;
+import com.goodow.realtime.channel.server.ChannelModule;
+import com.goodow.realtime.channel.server.ChannelWebServer;
+
 import com.google.inject.Inject;
 
 import com.google.inject.Provider;

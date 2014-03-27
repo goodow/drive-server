@@ -4,10 +4,10 @@ import com.goodow.realtime.channel.Bus;
 import com.goodow.realtime.channel.Message;
 import com.goodow.realtime.channel.MessageHandler;
 import com.goodow.realtime.channel.impl.WebSocketBus;
+import com.goodow.realtime.channel.server.VertxPlatform;
 import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
-import com.goodow.realtime.server.VertxPlatform;
 
 import org.junit.Test;
 import org.vertx.testtools.TestVerticle;
