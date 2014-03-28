@@ -34,25 +34,31 @@ public class InitDataFormExcel {
   private static final JsonArray ERRORS = Json.createArray();
   private static final JsonArray repeatInfo = Json.createArray();
   private static final Map<String, String> repeatIdNames = new HashMap<>();
+  // 所有的素材
   private static final List<String> catagories = Arrays.asList("素材-活动设计", "素材-文学作品", "素材-说明文字",
       "素材-背景知识", "素材-乐谱", "素材-教学图片", "素材-动态图", "素材-参考图", "素材-挂图", "素材-轮廓图", "素材-头饰", "素材-手偶",
       "素材-胸牌", "素材-动画", "素材-电子书", "素材-视频", "素材-音频", "素材-音效");
   private static final Map<String, List<String>> searchGradeRelation = new HashMap<>();
   private static final List<String> themes = Arrays.asList("和谐", "托班", "示范课", "入学准备", "安全教育",
       "早期阅读");
+  // 所有的班级
   private static final List<String> grades = Arrays.asList("小班", "中班", "大班", "学前班");
+  // 所有的学期
   private static final List<String> terms = Arrays.asList("上学期", "下学期");
+  // 所有的主题
   private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
       "艺术(美术)", "我有一个幼儿园", "找找,藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色", "暖暖的……",
-      "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他");
+      "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "居家安全", "饮食安全", "运动安全", "安全自救");
 
   static {
+    // 文件后缀和MIME的对应关系
     mime.put("mp3", "audio/mpeg");
     mime.put("mp4", "video/mp4");
     mime.put("pdf", "application/pdf");
     mime.put("swf", "application/x-shockwave-flash");
     mime.put("jpeg", "image/jpeg");
     mime.put("jpg", "image/jpeg");
+    // 一级搜索和MIME的对应关系
     mime.put("活动设计", "application/pdf");
     mime.put("图片", "image/jpeg");
     mime.put("动画", "application/x-shockwave-flash");
@@ -60,6 +66,7 @@ public class InitDataFormExcel {
     mime.put("视频", "video/mp4");
     mime.put("音频", "audio/mpeg");
 
+    // 支持文件后缀
     suffix.add(".mp3");
     suffix.add(".mp4");
     suffix.add(".pdf");
@@ -67,6 +74,7 @@ public class InitDataFormExcel {
     suffix.add(".jpeg");
     suffix.add(".jpg");
 
+    // 搜索的一级和二级对应关系
     searchGradeRelation.put("活动设计", Arrays.asList(new String[] {
         "健康", "托班", "语言", "社会", "数学", "科学", "艺术(美术)", "艺术(音乐)"}));
 
