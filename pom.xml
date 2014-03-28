@@ -38,11 +38,6 @@
       <artifactId>realtime-channel</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.goodow.realtime</groupId>
-      <artifactId>realtime-android</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
 
     <!--Vert.x dependencies-->
     <dependency>

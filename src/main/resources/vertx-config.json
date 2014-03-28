@@ -1,10 +1,15 @@
 {
-  "port": 8082,
-  "route_matcher": true,
-
-  "bridge": true,
-  "inbound_permitted": [{}],
-  "outbound_permitted": [{}],
+  "web_server": {
+    "port": 8082
+  },
+  
+  "realtime_channel": {
+    "port": 8080,
+      
+    "bridge": true,
+    "inbound_permitted": [{}],
+    "outbound_permitted": [{}]
+  },
 
   "elasticsearch": {
     "client": {

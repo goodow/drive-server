@@ -1,6 +1,7 @@
 package com.goodow.drive.server.bootstrap;
 
 import com.goodow.drive.server.analytics.PlayerAnalyticsVerticle;
+
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.AsyncResultHandler;
@@ -22,6 +23,9 @@ public class DriveVerticle extends BusModBase {
             }
           }
         });
+
+    container.deployModule("com.goodow.realtime~realtime-channel~0.5.5-SNAPSHOT", config
+        .getObject("realtime_channel"));
 
     container.deployVerticle(PlayerAnalyticsVerticle.class.getName(), config);
   }

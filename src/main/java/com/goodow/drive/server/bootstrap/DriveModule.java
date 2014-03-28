@@ -1,8 +1,10 @@
 package com.goodow.drive.server.bootstrap;
 
-import com.alienos.guice.VertxModule;
+import com.goodow.realtime.channel.Bus;
+import com.goodow.realtime.channel.server.VertxBus;
 import com.goodow.realtime.channel.util.IdGenerator;
 
+import com.alienos.guice.VertxModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
@@ -59,6 +61,12 @@ public class DriveModule extends AbstractModule implements VertxModule {
 
   @Provides
   @Singleton
+  Bus provideBus() {
+    return new VertxBus(vertx.eventBus());
+  }
+
+  @Provides
+  @Singleton
   Client provideElasticSearchClient() {
     JsonObject config1 = container.config();
     JsonObject config =
@@ -90,7 +98,7 @@ public class DriveModule extends AbstractModule implements VertxModule {
   @Provides
   @Singleton
   String provideWebRoot() {
-    String webRoot = container.config().getString("web_root");
+    String webRoot = container.config().getObject("web_server").getString("web_root");
     return webRoot == null ? WebServerBase.DEFAULT_WEB_ROOT : webRoot;
   }
 }
