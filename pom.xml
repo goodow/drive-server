@@ -48,10 +48,6 @@
       <groupId>io.vertx</groupId>
       <artifactId>mod-web-server</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.vertx</groupId>
-      <artifactId>mod-rxvertx</artifactId>
-    </dependency>
 
     <!-- ElasticSearch -->
     <dependency>
