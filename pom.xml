@@ -35,7 +35,7 @@
     <!-- Internal modules -->
     <dependency>
       <groupId>com.goodow.realtime</groupId>
-      <artifactId>realtime-channel</artifactId>
+      <artifactId>realtime-store</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
 
