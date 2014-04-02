@@ -6,15 +6,12 @@ import com.goodow.drive.server.attachment.FormUploadHandler;
 import com.alienos.guice.GuiceVerticleHelper;
 import com.alienos.guice.GuiceVertxBinding;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 
-import org.elasticsearch.client.Client;
 import org.vertx.java.core.http.RouteMatcher;
 import org.vertx.mods.web.WebServer;
 
 @GuiceVertxBinding(modules = {DriveModule.class})
 public class DriveWebServer extends WebServer {
-  @Inject private Provider<Client> client;
   @Inject private FormUploadHandler formUploadHandler;
   @Inject private DownloadHandler downloadHandler;
 
@@ -28,7 +25,6 @@ public class DriveWebServer extends WebServer {
   @Override
   public void stop() {
     super.stop();
-    client.get().close();
   }
 
   @Override

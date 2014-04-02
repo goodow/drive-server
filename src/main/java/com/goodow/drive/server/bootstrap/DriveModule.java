@@ -10,18 +10,10 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.Requests;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.io.Streams;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.vertx.java.core.Vertx;
-import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.platform.Container;
 import org.vertx.mods.web.WebServerBase;
 
-import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DriveModule extends AbstractModule implements VertxModule {
@@ -63,29 +55,6 @@ public class DriveModule extends AbstractModule implements VertxModule {
   @Singleton
   Bus provideBus() {
     return new VertxBus(vertx.eventBus());
-  }
-
-  @Provides
-  @Singleton
-  Client provideElasticSearchClient() {
-    JsonObject config1 = container.config();
-    JsonObject config =
-        config1.getObject("elasticsearch").getObject("client").getObject("transport");
-    TransportClient client =
-        new TransportClient().addTransportAddress(new InetSocketTransportAddress(config.getString(
-            "host", "localhost"), config.getInteger("port", 9300)));
-    if (!client.admin().indices().exists(Requests.indicesExistsRequest(INDEX)).actionGet()
-        .isExists()) {
-      try {
-        String mapping = Streams.copyToStringFromClasspath("/index-settings.json");
-        client.admin().indices().create(Requests.createIndexRequest(INDEX).source(mapping))
-            .actionGet();
-      } catch (IOException e) {
-        log.log(Level.SEVERE, "Failed to read index-settings.json", e);
-      }
-    }
-    return client;
-    // return NodeBuilder.nodeBuilder().node().client();
   }
 
   @Provides

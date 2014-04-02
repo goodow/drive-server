@@ -2,6 +2,6 @@
   "main": "com.goodow.drive.server.bootstrap.DriveVerticle",
   "auto-redeploy": true,
 
-  "deploys": "com.goodow.realtime~realtime-channel~0.5.5-SNAPSHOT, io.vertx~mod-redis~1.1.4-SNAPSHOT",
+  "deploys": "com.goodow.realtime~realtime-channel~0.5.5-SNAPSHOT, com.englishtown~vertx-mod-elasticsearch~1.0.0-SNAPSHOT",
   "includes": "com.goodow.vertx~mod-guice~1.0.0-beta1"
 }

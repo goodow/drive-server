@@ -12,12 +12,10 @@
   },
 
   "elasticsearch": {
-    "client": {
-      "transport": {
-        "host": "data.goodow.com",
-        "port": 9300
-      }
-    }
+    "address": "realtime.elasticsearch",
+    "transportAddresses": [{"hostname": "data.goodow.com", "port": 9300}],
+    "cluster_name": "elasticsearch",
+    "client_transport_sniff": true
   },
 
   "redis": {

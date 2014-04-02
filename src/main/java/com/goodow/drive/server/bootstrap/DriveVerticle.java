@@ -26,6 +26,8 @@ public class DriveVerticle extends BusModBase {
 
     container.deployModule("com.goodow.realtime~realtime-channel~0.5.5-SNAPSHOT", config
         .getObject("realtime_channel"));
+    container.deployModule("com.englishtown~vertx-mod-elasticsearch~1.0.0-SNAPSHOT", config
+        .getObject("elasticsearch"));
 
     container.deployVerticle(PlayerAnalyticsVerticle.class.getName(), config);
   }

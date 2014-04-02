@@ -7,13 +7,11 @@ import com.alienos.guice.GuiceVerticleHelper;
 import com.alienos.guice.GuiceVertxBinding;
 import com.google.inject.Inject;
 
-import org.elasticsearch.client.Client;
 import org.vertx.java.busmods.BusModBase;
 
 @GuiceVertxBinding(modules = {DriveModule.class})
 public class PlayerAnalyticsVerticle extends BusModBase {
   @Inject private Bus bus;
-  @Inject private Client client;
 
   @Override
   public void start() {
@@ -24,6 +22,5 @@ public class PlayerAnalyticsVerticle extends BusModBase {
   @Override
   public void stop() {
     super.stop();
-    client.close();
   }
 }
