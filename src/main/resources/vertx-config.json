@@ -22,5 +22,9 @@
     "address": "redis.pub",
     "host": "data.goodow.com",
     "port": 6379
-  }
+  },
+ 
+  "callback": {
+    "distance_overflow": "你的设备被锁定，请回到首次使用地点，或者联系服务电话: xxx-xxxx"
+  } 
 }

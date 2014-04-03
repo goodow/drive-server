@@ -1,6 +1,7 @@
 package com.goodow.drive.server.bootstrap;
 
 import com.goodow.drive.server.analytics.PlayerAnalyticsVerticle;
+import com.goodow.drive.server.geo.GeoAuthenticate;
 
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.AsyncResult;
@@ -30,5 +31,7 @@ public class DriveVerticle extends BusModBase {
         .getObject("elasticsearch"));
 
     container.deployVerticle(PlayerAnalyticsVerticle.class.getName(), config);
+
+    container.deployVerticle(GeoAuthenticate.class.getName(), config);
   }
 }
