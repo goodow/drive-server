@@ -46,9 +46,9 @@ public class InitDataFormExcel {
   // 所有的学期
   private static final List<String> terms = Arrays.asList("上学期", "下学期");
   // 所有的主题
-  private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
-      "艺术(美术)", "我有一个幼儿园", "找找,藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色", "暖暖的……",
-      "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "居家安全", "饮食安全", "运动安全", "安全自救");
+  private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)","早期阅读",
+      "艺术(美术)", "我有一个幼儿园", "找找.藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色", "暖暖的……",
+      "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "幼儿用书", "教师用书","我想长大", "亲亲热热一家人", "小动物来了", "绿绿的……", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏");
 
   static {
     // 文件后缀和MIME的对应关系
@@ -89,7 +89,7 @@ public class InitDataFormExcel {
     searchGradeRelation.put("音频", Arrays.asList(new String[] {"音乐作品音频", "文学作品音频", "音效"}));
 
     searchGradeRelation.put("电子书", Arrays.asList(new String[] {
-        "电子书1", "电子书2", "电子书3", "电子书4", "电子书5", "电子书6"}));
+        "早期阅读", "安全教育", "托班"}));
   }
 
   public static void factory(String sdCard1, String sdCard2) {
