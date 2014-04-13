@@ -10,17 +10,15 @@ import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
 
-import com.google.inject.Inject;
-
 import com.alienos.guice.GuiceVerticleHelper;
 import com.alienos.guice.GuiceVertxBinding;
+import com.google.inject.Inject;
 
 import org.vertx.java.busmods.BusModBase;
 
 @GuiceVertxBinding(modules = {DriveModule.class})
 public class PlayerAnalyticsVerticle extends BusModBase {
-  @Inject
-  private Bus bus;
+  @Inject private Bus bus;
 
   private static final String ADDR_PLAYER_ANALYTICS = MyConstant.ADDR + MyConstant.ADDR_PLAYER;
   private static final String ES_INDEX = MyConstant.ES_INDEX;
@@ -39,7 +37,7 @@ public class PlayerAnalyticsVerticle extends BusModBase {
                 .set("_type", ES_TYPE).set("_source",
                     message.body().set("post_date", DateUtil.getDate()));
 
-        bus.send("realtime.elasticsearch", msg, new MessageHandler<JsonObject>() {
+        bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
           @Override
           public void handle(Message<JsonObject> messageDb) {
             // 返回最大值

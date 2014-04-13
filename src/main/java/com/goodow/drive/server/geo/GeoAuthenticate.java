@@ -10,10 +10,9 @@ import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
 
-import com.google.inject.Inject;
-
 import com.alienos.guice.GuiceVerticleHelper;
 import com.alienos.guice.GuiceVertxBinding;
+import com.google.inject.Inject;
 
 import org.vertx.java.busmods.BusModBase;
 
@@ -25,8 +24,7 @@ import org.vertx.java.busmods.BusModBase;
  */
 @GuiceVertxBinding(modules = {DriveModule.class})
 public class GeoAuthenticate extends BusModBase {
-  @Inject
-  private Bus bus;
+  @Inject private Bus bus;
   private static final String ADDR_GEO = MyConstant.ADDR + MyConstant.ADDR_GEO;
   private static final String ES_INDEX = MyConstant.ES_INDEX;
   private static final String ES_TYPE = MyConstant.ES_TYPE_T_GEO;
@@ -45,7 +43,7 @@ public class GeoAuthenticate extends BusModBase {
         Json.createObject().set("action", "index").set("_index", ES_INDEX).set("_type", ES_TYPE)
             .set("_id", searchHit.getObject(0).getString("_id")).set("_source", source);
 
-    bus.send("realtime.elasticsearch", msgUpdate, new MessageHandler<JsonObject>() {
+    bus.send("realtime.search", msgUpdate, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> messageDb) {
       }
@@ -83,7 +81,7 @@ public class GeoAuthenticate extends BusModBase {
         Json.createObject().set("action", "index").set("_index", ES_INDEX).set("_type", ES_TYPE)
             .set("_source",
                 message.body().set("expired", "false").set("post_date", DateUtil.getDate()));
-    bus.send("realtime.elasticsearch", msgNew, new MessageHandler<JsonObject>() {
+    bus.send("realtime.search", msgNew, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> messageDb) {
       }
@@ -102,7 +100,7 @@ public class GeoAuthenticate extends BusModBase {
                 "_source",
                 Json.createObject().set("sid", message.body().getString("sid")).set("unlocked",
                     "false").set("expired", "false"));
-    bus.send("realtime.elasticsearch", toUnlocked, new MessageHandler<JsonObject>() {
+    bus.send("realtime.search", toUnlocked, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> messageDb) {
       }
@@ -127,7 +125,7 @@ public class GeoAuthenticate extends BusModBase {
         } else {
           final JsonObject msg = getQuery(message);
 
-          bus.send("realtime.elasticsearch", msg, new MessageHandler<JsonObject>() {
+          bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
             @Override
             public void handle(Message<JsonObject> messageDb) {
               searchHit = messageDb.body().getObject("hits").getArray("hits");
@@ -182,7 +180,7 @@ public class GeoAuthenticate extends BusModBase {
    * @param msg
    */
   private void expiredData(final JsonObject msg, final Message<JsonObject> message) {
-    bus.send("realtime.elasticsearch", msg, new MessageHandler<JsonObject>() {
+    bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> messageDb) {
         searchHit = messageDb.body().getObject("hits").getArray("hits");
@@ -196,7 +194,7 @@ public class GeoAuthenticate extends BusModBase {
                     ES_TYPE).set("_id", searchHit.getObject(i).getString("_id")).set("_source",
                     source);
 
-            bus.send("realtime.elasticsearch", msgUpdate, new MessageHandler<JsonObject>() {
+            bus.send("realtime.search", msgUpdate, new MessageHandler<JsonObject>() {
               @Override
               public void handle(Message<JsonObject> message) {
               }

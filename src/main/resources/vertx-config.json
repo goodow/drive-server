@@ -4,16 +4,14 @@
   },
   
   "realtime_channel": {
-    "port": 8080,
-      
-    "bridge": true,
-    "inbound_permitted": [{}],
-    "outbound_permitted": [{}]
+    "port": 8080
   },
-
+  
+  "realtime_search": {
+    "address": "realtime.search"
+  },
   "elasticsearch": {
-    "address": "realtime.elasticsearch",
-    "transportAddresses": [{"hostname": "data.goodow.com", "port": 9300}],
+    "transportAddresses": [{"host": "data.goodow.com", "port": 9300}],
     "cluster_name": "elasticsearch",
     "client_transport_sniff": true
   },
