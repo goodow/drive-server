@@ -1,0 +1,30 @@
+# type: attachment
+---
+id: o90ad
+title: 文件标题
+contentType: audio/mp3
+contentLength: 113585243  # optional
+url: 文件路径 # /mnt/sdcard/xxx.swf
+thumbnail: 缩略图url # /mnt/sdcard/xxx.png
+tags: [上学期, 中班, 活动名称]
+
+# type: attachmentActivity
+---
+id: o90ad
+open: 2014-11-15T14:12:12 # 打开时间戳
+duration: 10 # 持续时间, 单位秒
+user: sid # 使用者
+
+# type: device
+---
+id: sid # 设备号
+owner: 北京市幼儿园 # 所有者
+
+# type: deviceActivity
+---
+id: sid # 设备号
+open: 2014-11-15T14:12:12 # 开机时间戳
+duration: 10 # 持续时间, 单位秒
+address: 北京市海淀区海淀大街3号-3288号
+coordinates: [-71.34, 41.12] # [经度, 纬度] http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-geo-point-type.html
+radius: 44.94444274902344 # 精度, 单位米
