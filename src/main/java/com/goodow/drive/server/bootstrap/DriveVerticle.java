@@ -9,7 +9,7 @@ import org.vertx.java.core.AsyncResultHandler;
 import org.vertx.java.core.Future;
 
 public class DriveVerticle extends BusModBase {
-  private int count;
+  private int countDownLatch = 4;
 
   @Override
   public void start(final Future<Void> startedResult) {
@@ -17,13 +17,10 @@ public class DriveVerticle extends BusModBase {
     AsyncResultHandler<String> doneHandler = new AsyncResultHandler<String>() {
       @Override
       public void handle(AsyncResult<String> ar) {
-        if (ar.succeeded()) {
-          count++;
-          if (count == 4) {
-            startedResult.setResult(null);
-          }
-        } else {
+        if (ar.failed()) {
           startedResult.setFailure(ar.cause());
+        } else if (ar.succeeded() && --countDownLatch == 0) {
+          startedResult.setResult(null);
         }
       }
     };
