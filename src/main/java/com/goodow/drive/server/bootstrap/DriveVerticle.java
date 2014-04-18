@@ -1,7 +1,7 @@
 package com.goodow.drive.server.bootstrap;
 
 import com.goodow.drive.server.analytics.PlayerAnalyticsVerticle;
-import com.goodow.drive.server.geo.GeoAuthenticate;
+import com.goodow.drive.server.attachment.AttachmentInfo;
 
 import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.AsyncResult;
@@ -29,6 +29,7 @@ public class DriveVerticle extends BusModBase {
 
     container.deployVerticle(DriveWebServer.class.getName(), config, doneHandler);
     container.deployVerticle(PlayerAnalyticsVerticle.class.getName(), config, doneHandler);
-    container.deployVerticle(GeoAuthenticate.class.getName(), config, doneHandler);
+    // container.deployVerticle(GeoAuthenticate.class.getName(), config, doneHandler);
+    container.deployVerticle(AttachmentInfo.class.getName(), config, doneHandler);
   }
 }
