@@ -10,9 +10,10 @@ import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
 
+import com.google.inject.Inject;
+
 import com.alienos.guice.GuiceVerticleHelper;
 import com.alienos.guice.GuiceVertxBinding;
-import com.google.inject.Inject;
 
 import org.vertx.java.busmods.BusModBase;
 
@@ -24,10 +25,11 @@ import org.vertx.java.busmods.BusModBase;
  */
 @GuiceVertxBinding(modules = {DriveModule.class})
 public class GeoAuthenticate extends BusModBase {
-  @Inject private Bus bus;
+  @Inject
+  private Bus bus;
   private static final String ADDR_GEO = MyConstant.ADDR + MyConstant.ADDR_GEO;
   private static final String ES_INDEX = MyConstant.ES_INDEX;
-  private static final String ES_TYPE = MyConstant.ES_TYPE_T_GEO;
+  private static final String ES_TYPE = MyConstant.ES_TYPE_GEO;
   private static final double EFFECTIVE_DISTANCE = 10; // 设备移动的有效距离
   private static final String ACTION_UNLOCKED = "unlocked"; // 解锁设备
   private static final int ERRORCODE = 161; // 正确的码

@@ -9,9 +9,11 @@ public class MyConstant {
    * ES中type的名称
    */
   // 播放统计
-  public static final String ES_TYPE_T_PLAYER = "T_PLAYER";
+  public static final String ES_TYPE_PLAYER = "attachmentActivity";
   // 地理校验
-  public static final String ES_TYPE_T_GEO = "T_GEO";
+  public static final String ES_TYPE_GEO = "deviceActivity";
+  // device
+  public static final String ES_TYPE_DEVICE = "device";
   // excel中的文件
   public static final String ES_TYPE_T_FILE = "T_FILE";
   // 文件
@@ -27,10 +29,12 @@ public class MyConstant {
   // 文件和标签数据导入
   public static final String ADDR_FILE = "db";
   // 播放统计
-  public static final String ADDR_PLAYER = "player.analytics";
+  public static final String ADDR_PLAYER = ADDR + "player.analytics";
+  // 开关机统计
+  public static final String ADDR_SYSTEM = ADDR + "systime.analytics";
   // 地理校验
-  public static final String ADDR_GEO = "auth";
-
+  public static final String ADDR_GEO = ADDR + "auth";
   // 文件地址
   public static final String ADDR_ATTACHMENT = ADDR + "attachment";
+
 }
