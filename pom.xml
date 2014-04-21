@@ -69,9 +69,9 @@
     
     <!-- Allow vertx to use these mods in local maven repository -->
     <dependency>
-      <groupId>com.goodow.realtime</groupId>
-      <artifactId>realtime-search</artifactId>
-      <version>${project.parent.version}</version>
+      <groupId>com.goodow.vertx</groupId>
+      <artifactId>vertx-mod-elasticsearch</artifactId>
+      <version>${elasticsearch.version}</version>
       <scope>test</scope>
       <classifier>mod</classifier>
       <type>zip</type>
