@@ -1,6 +1,7 @@
 package com.goodow.drive.server.bootstrap;
 
 import com.goodow.drive.server.attachment.AttachmentInfo;
+import com.goodow.drive.server.terminal.AuthTerminal;
 import com.goodow.drive.server.terminal.PlayerAnalytics;
 import com.goodow.drive.server.terminal.SystimeAnalytics;
 
@@ -10,7 +11,7 @@ import org.vertx.java.core.AsyncResultHandler;
 import org.vertx.java.core.Future;
 
 public class DriveVerticle extends BusModBase {
-  private int countDownLatch = 5;
+  private int countDownLatch = 6;
 
   @Override
   public void start(final Future<Void> startedResult) {
@@ -32,5 +33,6 @@ public class DriveVerticle extends BusModBase {
     container.deployVerticle(AttachmentInfo.class.getName(), config, doneHandler);
     container.deployVerticle(PlayerAnalytics.class.getName(), config, doneHandler);
     container.deployVerticle(SystimeAnalytics.class.getName(), config, doneHandler);
+    container.deployVerticle(AuthTerminal.class.getName(), config, doneHandler);
   }
 }

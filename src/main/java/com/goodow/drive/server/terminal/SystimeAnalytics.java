@@ -67,7 +67,8 @@ public class SystimeAnalytics extends BusModBase {
     for (int i = 0; i < analyticsArray.length(); i++) {
       JsonObject msg =
           Json.createObject().set("action", "index").set("_index", MyConstant.ES_INDEX).set(
-              "_type", MyConstant.ES_TYPE_GEO).set("source", analyticsArray.getObject(i));
+              "_type", MyConstant.ES_TYPE_DEVICEACTIVITY)
+              .set("source", analyticsArray.getObject(i));
       bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
         @Override
         public void handle(Message<JsonObject> messageDb) {

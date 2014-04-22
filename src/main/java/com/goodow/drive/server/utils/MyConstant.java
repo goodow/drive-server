@@ -8,14 +8,14 @@ public class MyConstant {
   /**
    * ES中type的名称
    */
-  // 播放统计
-  public static final String ES_TYPE_PLAYER = "attachmentActivity";
-  // 地理校验
-  public static final String ES_TYPE_GEO = "deviceActivity";
-  // device
-  public static final String ES_TYPE_DEVICE = "device";
-  // 文件
+  // 文件信息
   public static final String ES_TYPE_ATTACHMENT = "attachment";
+  // 文件行为(播放)统计
+  public static final String ES_TYPE_PLAYER = "attachmentActivity";
+  // 设备信息
+  public static final String ES_TYPE_DEVICE = "device";
+  // 设备行为(地理校验)统计
+  public static final String ES_TYPE_DEVICEACTIVITY = "deviceActivity";
 
   /**
    * 服务器监听的地址
