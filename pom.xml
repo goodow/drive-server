@@ -82,6 +82,14 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.goodow.vertx</groupId>
+      <artifactId>mod-guice</artifactId>
+      <version>1.0.0-beta1</version>
+      <scope>test</scope>
+      <classifier>mod</classifier>
+      <type>zip</type>
+    </dependency>
   </dependencies>
 
   <build>
@@ -138,6 +146,8 @@
             <configuration>
               <outputDirectory>${vertx.mods.directory}/${vertx.module.name}/lib</outputDirectory>
               <includeScope>runtime</includeScope>
+              <excludeGroupIds>com.fasterxml.jackson.core,com.fasterxml.jackson.dataformat</excludeGroupIds>
+              <excludeArtifactIds>realtime-json</excludeArtifactIds>
             </configuration>
           </execution>
           <execution>
