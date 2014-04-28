@@ -45,7 +45,7 @@ public class SystimeAnalytics extends BusModBase {
         for (int i = 0; i < analytics.length(); i++) {
           JsonObject object = analytics.getObject(i);
           long openTime = (long) object.getNumber("openTime");
-          long lastTime = (long) object.getNumber("lastTime");
+          long lastTime = ((long) object.getNumber("lastTime") / 1000);
           analyticsArray.push(Json.createObject().set("deviceId", sid).set("open",
               DateUtil.parseTimestamp(openTime)).set("duration", lastTime));
           countDownLatch++;

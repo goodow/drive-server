@@ -48,7 +48,7 @@ public class PlayerAnalytics extends BusModBase {
           for (int j = 0; j < timestamps.length(); j++) {
             JsonObject timestampObject = timestamps.getObject(j);
             long openTime = (long) timestampObject.getNumber("openTime");
-            long lastTime = (long) timestampObject.getNumber("lastTime");
+            long lastTime = ((long) timestampObject.getNumber("lastTime") / 1000);
             analyticsArray.push(Json.createObject().set("user", sid).set("attachmentId",
                 attachmentId).set("open ", DateUtil.parseTimestamp(openTime)).set("duration",
                 lastTime));
