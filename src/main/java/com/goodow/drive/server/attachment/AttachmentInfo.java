@@ -1,7 +1,6 @@
 package com.goodow.drive.server.attachment;
 
 import com.goodow.drive.server.bootstrap.DriveModule;
-import com.goodow.drive.server.utils.DateUtil;
 import com.goodow.drive.server.utils.MyConstant;
 import com.goodow.realtime.channel.Bus;
 import com.goodow.realtime.channel.Message;
@@ -38,11 +37,13 @@ public class AttachmentInfo extends BusModBase {
 
       @Override
       public void handle(final Message<JsonObject> message) {
+        JsonObject body = message.body();
+        String id = body.getString("id");
+        body.remove("id");
         // 执行插入
         JsonObject msgNew =
             Json.createObject().set("action", "index").set("_index", MyConstant.ES_INDEX).set(
-                "_type", MyConstant.ES_TYPE_ATTACHMENT).set("_id", message.body().getString("id"))
-                .set("source", message.body().remove("id").set("postTime", DateUtil.getDate()));
+                "_type", MyConstant.ES_TYPE_ATTACHMENT).set("_id", id).set("source", body);
         bus.send("realtime.search", msgNew, new MessageHandler<JsonObject>() {
           @Override
           public void handle(Message<JsonObject> resultMessage) {
