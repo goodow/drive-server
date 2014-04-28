@@ -3,7 +3,7 @@ package com.goodow.drive.server.utils;
 public class MyConstant {
 
   // ES中index的名称
-  public static final String ES_INDEX = "goodow";
+  public static final String ES_INDEX = "drive_test";
 
   /**
    * ES中type的名称
@@ -14,8 +14,6 @@ public class MyConstant {
   public static final String ES_TYPE_GEO = "deviceActivity";
   // device
   public static final String ES_TYPE_DEVICE = "device";
-  // excel中的文件
-  public static final String ES_TYPE_T_FILE = "T_FILE";
   // 文件
   public static final String ES_TYPE_ATTACHMENT = "attachment";
 
