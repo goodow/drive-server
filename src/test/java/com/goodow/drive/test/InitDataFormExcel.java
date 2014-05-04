@@ -21,8 +21,7 @@ import java.util.Map;
  */
 public class InitDataFormExcel {
 
-  public static final JsonArray TABLE_RELATION_DATA = Json.createArray();
-  public static final JsonArray TABLE_FILE_DATA = Json.createArray();
+  public static final JsonArray FILES_TAGS = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
   private static boolean check = true;// 标记要不要校验文件属性
   private static boolean replace = true;// 标记要不要本地替换文件模拟路径
@@ -93,6 +92,10 @@ public class InitDataFormExcel {
   }
 
   public static void factory(String sdCard1, String sdCard2) {
+    FILES_TAGS.clear();
+    ERRORS.clear();
+    repeatInfo.clear();
+    repeatIdNames.clear();
     SD1_PATH = sdCard1;
     SD2_PATH = sdCard2;
     try {
@@ -223,92 +226,26 @@ public class InitDataFormExcel {
             continue;
           }
           List<String> list = data.get(i);
-          /**
-           * 创建文件
-           */
-          JsonObject file = Json.createObject();
-          file.set(Constant.KEY_ID, list.get(0).trim());// 编号
-          file.set(Constant.KEY_NAME, list.get(1).trim());// 文件名称
+          JsonObject jsonObject =
+              Json.createObject().set("_id", list.get(0).trim()).set("title", list.get(1).trim())
+                  .set("contentType", getContentTypeBySuffix(list.get(2).trim())).set(
+                      "contentLength", getContentLenght(list.get(2).trim()));
           if (replace) {
-            file.set(Constant.KEY_URL, getTruePath(list.get(2).trim()));// 文件路径
+            jsonObject.set("url", getTruePath(list.get(2).trim()));// 文件路径
+            if (list.size() > 3 && list.get(3) != null) {
+              jsonObject.set("thumbnail", getTruePath(list.get(3).trim()));// 缩略图路径
+            }
           } else {
-            file.set(Constant.KEY_URL, list.get(2).trim());
-          }
-          file.set(Constant.KEY_CONTENTLENGTH, getContentLenght(list.get(2).trim()));// 文件长度
-          file.set(Constant.KEY_CONTENTTYPE, getContentTypeBySuffix(list.get(2).trim()));// 文件contentType
-          if (list.size() > 3 && list.get(3) != null) {
-            if (replace) {
-              file.set(Constant.KEY_THUMBNAIL, getTruePath(list.get(3).trim()));// 缩略图路径
-            } else {
-              file.set(Constant.KEY_THUMBNAIL, list.get(3).trim());
+            jsonObject.set("url", list.get(2).trim());
+            if (list.size() > 3 && list.get(3) != null) {
+              jsonObject.set("thumbnail", list.get(3).trim());
             }
           }
-          TABLE_FILE_DATA.push(file);
+          jsonObject.set("tags", Json.createArray().push(list.get(4)).push(list.get(5)).push(
+              list.get(6)).push(list.get(7)).push(list.get(8)).push(list.get(9)).push(list.get(10))
+              .push(list.get(11)).push(list.get(12)));
 
-          /**
-           * 建立文件和TAG的关系 第4列是素材类别 第5列是主题分类 第6列是班级 第7列是学期 第8列是主题或领域 第9列是活动 第10列是搜索一级分类 第11列是搜索二级分类
-           * 第12列是搜索关键字
-           */
-          for (int j = 4; j < list.size(); j++) {
-            if (list.get(j) == null) {
-              // 如果当前列是NULL该文件就不和该标签建立任何关系
-              continue;
-            }
-
-            if (j == 12 && list.get(12) != null) {
-              // 第12列的搜索的关键字 建立文件和搜索关键字的关系
-              String[] splits = list.get(12).split(",");
-              for (String split : splits) {
-                if (split == null || split.trim().equals("")) {
-                  // 忽略无效关键字
-                  continue;
-                }
-                JsonObject relationFile =
-                    Json.createObject().set(Constant.KEY_TYPE, "attachment").set(Constant.KEY_KEY,
-                        list.get(0).trim()).set(Constant.KEY_LABEL, split.trim());
-                TABLE_RELATION_DATA.push(relationFile);
-              }
-            } else {
-              // 如果除搜索关键字外的标签含有四位编号就去掉
-              String tag = list.get(j).trim();
-              if (tag.matches("^\\d{4}.*")) {
-                tag = tag.substring(4, tag.length());
-              }
-              JsonObject relationFile =
-                  Json.createObject().set(Constant.KEY_TYPE, "attachment").set(Constant.KEY_KEY,
-                      list.get(0).trim()).set(Constant.KEY_LABEL, tag.trim());
-              TABLE_RELATION_DATA.push(relationFile);
-            }
-          }
-
-          /**
-           * 建立主题分类, 班级, 学期, 主题或领域和活动的映射 第5列是主题分类 第6列是班级 第7列是学期 第8列是主题或领域 第9列是活动 list.size() >= 10
-           * 且list.get(9) != null才有活动的概念 兼容主题分类, 班级, 学期, 主题或领域是否为空
-           */
-          if (list.size() >= 10 && list.get(9) != null && list.get(5) != null) {
-            for (int j = 5; j < 9; j++) {
-              if (list.get(j) != null) {
-                String tag = list.get(9).trim();
-                if (tag.matches("^\\d{4}.*")) {
-                  tag = tag.substring(4, tag.length());
-                }
-                JsonObject relationTag =
-                    Json.createObject().set(Constant.KEY_TYPE, "tag").set(Constant.KEY_KEY,
-                        tag.trim()).set(Constant.KEY_LABEL, list.get(j).trim());
-                TABLE_RELATION_DATA.push(relationTag);
-              }
-            }
-          }
-
-          /**
-           * 建立一级搜索分类和二级搜索分类的关系 第10列是搜索一级分类 第11列是搜索二级分类
-           */
-          if (list.size() >= 12 && list.get(10) != null && list.get(11) != null) {
-            JsonObject relationTag =
-                Json.createObject().set(Constant.KEY_TYPE, "tag").set(Constant.KEY_KEY,
-                    list.get(11).trim()).set(Constant.KEY_LABEL, list.get(10).trim());
-            TABLE_RELATION_DATA.push(relationTag);
-          }
+          FILES_TAGS.push(jsonObject);
         }
       }
 

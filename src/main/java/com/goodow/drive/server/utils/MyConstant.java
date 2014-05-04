@@ -24,8 +24,6 @@ public interface MyConstant {
   public static final String ADDR = "sid.drive.";
   // 初始化数据库
   public static final String ADDR_INIT = "db.initial";
-  // 文件和标签数据导入
-  public static final String ADDR_FILE = "db";
   // 播放统计
   public static final String ADDR_PLAYER = ADDR + "player.analytics";
   // 开关机统计
@@ -33,8 +31,8 @@ public interface MyConstant {
   // 地理校验
   public static final String ADDR_GEO = ADDR + "auth";
   // 文件地址
-  public static final String ADDR_ATTACHMENT = ADDR + "attachment";
-  //Search channel.ES 操作 消息发送频道
+  public static final String ADDR_ATTACHMENT = ADDR + "db";
+  // Search channel.ES 操作 消息发送频道
   public static final String SEARCH_CHANNEL = "realtime.search";
 
 }

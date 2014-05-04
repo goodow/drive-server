@@ -38,19 +38,28 @@ public class AttachmentInfo extends BusModBase {
       @Override
       public void handle(final Message<JsonObject> message) {
         JsonObject body = message.body();
-        String id = body.getString("id");
-        body.remove("id");
-        // 执行插入
-        JsonObject msgNew =
-            Json.createObject().set("action", "index").set("_index", MyConstant.ES_INDEX).set(
-                "_type", MyConstant.ES_TYPE_ATTACHMENT).set("_id", id).set("source", body);
-        bus.send("realtime.search", msgNew, new MessageHandler<JsonObject>() {
-          @Override
-          public void handle(Message<JsonObject> resultMessage) {
-            message.reply(Json.createObject().set("created",
-                resultMessage.body().getBoolean("created")));
+        String action = body.getString("action");
+        if ("delete".equals(action)) {
+          message.reply(Json.createObject().set("status", "ok"));
+        }
+        if ("put".equals(action)) {
+          JsonArray datas = body.getArray("datas");
+          for (int i = 0; i < datas.length(); i++) {
+            JsonObject data = datas.getObject(i);
+            String id = data.getString("_id");
+            data.remove("_id");
+            // 执行插入
+            JsonObject msgNew =
+                Json.createObject().set("action", "index").set("_index", MyConstant.ES_INDEX).set(
+                    "_type", MyConstant.ES_TYPE_ATTACHMENT).set("_id", id).set("source", data);
+            bus.send("realtime.search", msgNew, new MessageHandler<JsonObject>() {
+              @Override
+              public void handle(Message<JsonObject> resultMessage) {
+                message.reply(Json.createObject().set("status", "ok"));
+              }
+            });
           }
-        });
+        }
       }
     });
   }

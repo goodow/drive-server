@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.goodow.realtime</groupId>
@@ -16,7 +16,7 @@
     <vertx.pullInDeps>false</vertx.pullInDeps>
     <vertx.createFatJar>false</vertx.createFatJar>
   </properties>
-  
+
   <repositories>
     <repository>
       <id>sonatype-nexus-snapshots</id>
@@ -39,7 +39,7 @@
       <version>${project.parent.version}</version>
     </dependency>
 
-    <!--Vert.x dependencies-->
+    <!--Vert.x dependencies -->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-platform</artifactId>
@@ -66,7 +66,15 @@
       <version>3.10-FINAL</version>
       <scope>test</scope>
     </dependency>
-    
+
+    <!-- Redis -->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>mod-redis-client</artifactId>
+      <version>1.1.4-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Allow vertx to use these mods in local maven repository -->
     <dependency>
       <groupId>com.goodow.vertx</groupId>

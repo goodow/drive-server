@@ -3,149 +3,119 @@ package com.goodow.drive.test;
 import com.goodow.realtime.channel.Bus;
 import com.goodow.realtime.channel.Message;
 import com.goodow.realtime.channel.MessageHandler;
-import com.goodow.realtime.channel.impl.WebSocketBus;
+import com.goodow.realtime.channel.server.VertxBus;
 import com.goodow.realtime.channel.server.VertxPlatform;
 import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
 
 import org.junit.Test;
+import org.vertx.java.core.AsyncResult;
+import org.vertx.java.core.AsyncResultHandler;
 import org.vertx.testtools.TestVerticle;
 import org.vertx.testtools.VertxAssert;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class DataImportTest extends TestVerticle {
-  private static final Logger log = Logger.getLogger(DataImportTest.class.getName());
-  private static String sid = "sid";// 提示：sid已经修改为mac
-  private static final String address = ".drive.db";
+  private static JsonArray sids = Json.createArray();
+  private static int number = 100;// 分批数值
+  private static JsonArray sdcards = Json.createArray();
+  private static String sdCard1 = "/mnt/sdcard";
+  private static String sdCard2 = "/mnt/sdcard";
+  private static String sid = "sid.drive.db";// 提示：sid已经修改为mac
 
-  // //模拟数据
-  // private static final JsonArray tagsDataTemp = InitData.RELATION_TABLE_DATA;
-  // private static final JsonArray filesDataTemp = InitData.FILE_TABLE_DATA;
-
-  // 导入数据
-  private static JsonArray tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
-  private static JsonArray filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
-
-  private static int numFile = 200;// 文件分批数值
-  private static int numRelation = 1000;// 对应关系分批数值
   private static final JsonArray insertingFiles = Json.createArray();
-  private static final JsonArray insertingTags = Json.createArray();
 
-  private static int SUCCESS_FILE_COUNTER = 0;
-  private static int SUCCESS_TAG_COUNTER = 0;
+  private static Map<String, Integer> SUCCESS_FILE_COUNTER = new HashMap<String, Integer>();
 
-  private static void file(final Bus bus, final JsonObject tag) {
-    bus.send(sid + address, tag, new MessageHandler<JsonObject>() {
+  private static void file(final Bus bus, final JsonObject tag, final String currentSid) {
+    bus.send(currentSid, tag, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
         if (message.body().has(Constant.KEY_STATUS)
             && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-          SUCCESS_FILE_COUNTER = SUCCESS_FILE_COUNTER + tag.getArray("data").length();
-          System.out.println("当前插入文件数据量：" + SUCCESS_FILE_COUNTER + "/" + filesDataTemp.length());
-          if (SUCCESS_FILE_COUNTER % numFile == 0) {
+          SUCCESS_FILE_COUNTER.put(currentSid, SUCCESS_FILE_COUNTER.get(currentSid) == null ? tag
+              .getArray("datas").length() : SUCCESS_FILE_COUNTER.get(currentSid)
+              + tag.getArray("datas").length());
+          System.out.println("当前插入" + currentSid + "文件数据量：" + SUCCESS_FILE_COUNTER.get(currentSid)
+              + "/" + InitDataFormExcel.FILES_TAGS.length());
+          if (SUCCESS_FILE_COUNTER.get(currentSid) < InitDataFormExcel.FILES_TAGS.length()) {
             JsonObject file =
-                Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
-                    insertingFiles.getArray(SUCCESS_FILE_COUNTER / numFile));
-            file(bus, file);
+                Json.createObject().set("action", "put").set("datas",
+                    insertingFiles.getArray((SUCCESS_FILE_COUNTER.get(currentSid) / number)));
+            file(bus, file, currentSid);
           } else {
-            System.out.println("\r\n ======================插入文件测试数据完毕======================\r\n");
-            // 插入文件完毕后再插入对应关系
-            JsonObject relation =
-                Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
-                    insertingTags.getArray(0));
-            relation(bus, relation);
+            System.out.println("\r\n ======================插入" + currentSid
+                + "文件数据完毕======================\r\n");
+            // VertxAssert.testComplete();
+            testComplete();
           }
         } else {
-          System.out.println("\r\n ======================插入文件测试数据失败======================\r\n");
-          VertxAssert.testComplete();
+          System.out.println("\r\n ======================插入" + currentSid
+              + "文件数据失败======================\r\n");
+          // VertxAssert.testComplete();
+          testComplete();
         }
       }
     });
   }
 
-  private static void handlerEventBusOpened(final Bus bus) {
-    bus.send(sid + address, Json.createObject().set("action", "delete"),
-        new MessageHandler<JsonObject>() {
-          @Override
-          public void handle(Message<JsonObject> message) {
-            if (message.body().has(Constant.KEY_STATUS)
-                && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-              System.out
-                  .println("\r\n======================数据库数据清除成功，准备插入数据======================\r\n");
-              JsonObject file =
-                  Json.createObject().set("action", "put").set("table", "T_FILE").set("data",
-                      insertingFiles.getArray(0));
-              file(bus, file);
-            } else {
-              System.out
-                  .println("\r\n======================数据库数据清除失败，拒绝后续数据插入======================\r\n");
-              VertxAssert.testComplete();
-            }
-          }
-        });
+  private static void testComplete() {
+    boolean flag = false;
+    Set<Entry<String, Integer>> entrySet = SUCCESS_FILE_COUNTER.entrySet();
+    for (Entry<String, Integer> entry : entrySet) {
+      Integer value = entry.getValue();
+      System.out.println(entry.getKey() + "=" + value);
+      if (value < InitDataFormExcel.FILES_TAGS.length()) {
+        flag = false;
+        break;
+      } else if (sids.length() == entrySet.size() && value >= InitDataFormExcel.FILES_TAGS.length()) {
+        flag = true;
+      }
+    }
+    if (flag) {
+      VertxAssert.testComplete();
+    }
   }
 
-  private static void relation(final Bus bus, final JsonObject tag) {
-    bus.send(sid + address, tag, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        if (message.body().has(Constant.KEY_STATUS)
-            && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
-          SUCCESS_TAG_COUNTER = SUCCESS_TAG_COUNTER + tag.getArray("data").length();
-          System.out.println("当前插入对应关系数据量：" + SUCCESS_TAG_COUNTER + "/" + tagsDataTemp.length());
-          if (SUCCESS_TAG_COUNTER % numRelation == 0) {
-            JsonObject relation =
-                Json.createObject().set("action", "put").set("table", "T_RELATION").set("data",
-                    insertingTags.getArray(SUCCESS_TAG_COUNTER / numRelation));
-            relation(bus, relation);
-          } else {
-            System.out.println("\r\n ======================插入标签测试数据完毕======================\r\n");
-            System.out.println("\r\n =========================数据初始化成功======================\r\n");
-            VertxAssert.testComplete();
-          }
-        } else {
-          System.out.println("\r\n ======================插入标签映射测试数据失败======================\r\n");
-          VertxAssert.testComplete();
-        }
-      }
-    });
-  }
+  private Bus bus;
 
   @Test
   public void importData() {
-    if (filesDataTemp.length() <= 0 || tagsDataTemp.length() <= 0) {
-      System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length()
-          + "   数据不完整");
+    if (InitDataFormExcel.FILES_TAGS.length() <= 0) {
+      System.out.println("文件总数量：" + InitDataFormExcel.FILES_TAGS.length() + "   数据不完整");
       VertxAssert.testComplete();
       return;
     }
-    System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length());
-    final Bus bus =
-        new WebSocketBus("ws://test.goodow.com:8080/eventbus/websocket", Json.createObject().set(
-            "forkLocal", true));
+    System.out.println("文件总数量：" + InitDataFormExcel.FILES_TAGS.length());
+    for (int i = 0; i < sids.length(); i++) {
+      final String currentSid = sids.getString(i);
+      bus.send(sids.getString(i), Json.createObject().set("action", "delete"),
+          new MessageHandler<JsonObject>() {
+            @Override
+            public void handle(Message<JsonObject> message) {
+              if (message.body().has(Constant.KEY_STATUS)
+                  && "ok".equals(message.body().getString(Constant.KEY_STATUS))) {
+                System.out.println("\r\n======================清除 " + currentSid + " 数据库数据成功，准备向"
+                    + currentSid + "插入数据======================\r\n");
 
-    bus.registerHandler(Bus.LOCAL_ON_OPEN, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        handlerEventBusOpened(bus);
-      }
-    });
-    bus.registerHandler(Bus.LOCAL_ON_CLOSE, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        log.info("EventBus closed");
-        VertxAssert.testComplete();
-      }
-    });
-    bus.registerHandler(Bus.LOCAL_ON_ERROR, new MessageHandler<JsonObject>() {
-      @Override
-      public void handle(Message<JsonObject> message) {
-        log.log(Level.SEVERE, "EventBus Error");
-      }
-    });
+                JsonObject file =
+                    Json.createObject().set("action", "put").set("datas",
+                        insertingFiles.getArray(0));
+                file(bus, file, currentSid);
+              } else {
+                System.out.println("\r\n======================清除 " + currentSid
+                    + " 数据库数据失败，拒绝后续数据插入======================\r\n");
+                // VertxAssert.testComplete();
+                testComplete();
+              }
+            }
+          });
+    }
   }
 
   @Override
@@ -153,54 +123,77 @@ public class DataImportTest extends TestVerticle {
     initialize();
     VertxPlatform.register(vertx);
 
-    sid = System.getProperty("sid", "sid");
-    numFile = Integer.parseInt(System.getProperty("f", "200"));
-    numRelation = Integer.parseInt(System.getProperty("r", "1000"));
-    String sdCard1 = System.getProperty("sd1", "/mnt/sdcard");
-    String sdCard2 = System.getProperty("sd2", "/mnt/sdcard");
-    InitDataFormExcel.factory(sdCard1, sdCard2);
-    tagsDataTemp = InitDataFormExcel.TABLE_RELATION_DATA;
-    filesDataTemp = InitDataFormExcel.TABLE_FILE_DATA;
+    sid = System.getProperty("sid", sid);
+    number = Integer.parseInt(System.getProperty("f", number + ""));
+    sdCard1 = System.getProperty("sd1", sdCard1);
+    sdCard2 = System.getProperty("sd2", sdCard2);
+
     System.out
         .println("命令样例:mvn clean test -D sid=mysid -D f=200 -D r=1000 -D sd1=mysd1 -D sd2=mysd2 \r\n");
-    System.out.println("输入参数：sid=" + sid + "  f=" + numFile + "  r=" + numRelation + "  sd1="
-        + sdCard1 + "   sd2=" + sdCard2 + "\r\n");
+    System.out.println("输入参数：sid=" + sid + "  f=" + number + "  sd1=" + sdCard1 + "   sd2="
+        + sdCard2 + "\r\n");
 
-    setUp();
-    startTests();
+    JsonObject config = Json.createObject();
+    config.set("web_server", Json.createObject().set("port", 8082)).set("realtime_channel",
+        Json.createObject().set("port", 8080)).set("realtime_search",
+        Json.createObject().set("address", "realtime.search")).set(
+        "elasticsearch",
+        Json.createObject().set(
+            "transportAddresses",
+            Json.createArray().push(
+                Json.createObject().set("host", "realtime.goodow.com").set("port", 9300))).set(
+            "cluster_name", "elasticsearch").set("client_transport_sniff", true)).set(
+        "redis",
+        Json.createObject().set("address", "redis.pub").set("host", "realtime.goodow.com").set(
+            "port", 6379)).set("callback",
+        Json.createObject().set("distance_overflow", "你的设备被锁定，请回到首次使用地点，或者联系服务电话: xxx-xxxx"));
+
+    container.deployModule(System.getProperty("vertx.modulename"),
+        new org.vertx.java.core.json.JsonObject(config.toJsonString()),
+        new AsyncResultHandler<String>() {
+          @Override
+          public void handle(AsyncResult<String> asyncResult) {
+            VertxAssert.assertTrue(asyncResult.succeeded());
+            VertxAssert.assertNotNull("deploymentID should not be null", asyncResult.result());
+            bus = new VertxBus(vertx.eventBus());
+            System.out.println("\r\n================== 可以发送消息了==================\r\n");
+            bus.registerHandler("sid.drive.db.start", new MessageHandler<JsonObject>() {
+              @Override
+              public void handle(Message<JsonObject> message) {
+                JsonObject body = message.body();
+                sids = body.getArray("sid");
+                if (body.has("num")) {
+                  number = (int) body.getNumber("num");
+                }
+                if (body.has("sdcard")) {
+                  sdcards = body.getArray("sdcard");
+                }
+                InitDataFormExcel.factory(sdcards.length() >= 1 ? sdcards.getString(0) : sdCard1,
+                    sdcards.length() >= 2 ? sdcards.getString(1) : sdCard2);
+                setUp();
+                startTests();
+                // message.reply(Json.createObject().set("status", "ok"));
+              }
+            });
+          }
+        });
   }
 
   private void setUp() {
     // 分组文件表数据
     int timer_file =
-        filesDataTemp.length() % numFile == 0 ? filesDataTemp.length() / numFile : filesDataTemp
-            .length()
-            / numFile + 1;
+        InitDataFormExcel.FILES_TAGS.length() % number == 0 ? InitDataFormExcel.FILES_TAGS.length()
+            / number : InitDataFormExcel.FILES_TAGS.length() / number + 1;
     for (int i = 0; i < timer_file; i++) {
       JsonArray temp = Json.createArray();
-      for (int j = 0; j < numFile; j++) {
-        if (numFile * i + j >= filesDataTemp.length()) {
+      for (int j = 0; j < number; j++) {
+        if (number * i + j >= InitDataFormExcel.FILES_TAGS.length()) {
           break;
         }
-        temp.push(filesDataTemp.getObject(numFile * i + j));
+        temp.push(InitDataFormExcel.FILES_TAGS.getObject(number * i + j));
       }
       insertingFiles.push(temp);
     }
 
-    // 分组文件表数据
-    int timer_tag =
-        tagsDataTemp.length() % numRelation == 0 ? tagsDataTemp.length() / numRelation
-            : tagsDataTemp.length() / numRelation + 1;
-    for (int i = 0; i < timer_tag; i++) {
-      JsonArray temp = Json.createArray();
-      for (int j = 0; j < numRelation; j++) {
-        if (numRelation * i + j >= tagsDataTemp.length()) {
-          break;
-        }
-        temp.push(tagsDataTemp.getObject(numRelation * i + j));
-      }
-      insertingTags.push(temp);
-    }
   }
-
 }

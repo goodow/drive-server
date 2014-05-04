@@ -60,7 +60,7 @@ public class InitEs extends TestCase {
               Json.createArray().push(list.get(4)).push(list.get(5)).push(list.get(6)).push(
                   list.get(7)).push(list.get(8)).push(list.get(9)).push(list.get(10)).push(
                   list.get(11)).push(list.get(12)));
-      System.out.println("bus.send(\"sid.drive.attachment\"," + jsonObject.toJsonString()
+      System.out.println("bus.send(\"sid.drive.db\"," + jsonObject.toJsonString()
           + ",function(msg){console.log(JSON.stringify(msg.body()))})");
     }
   }
