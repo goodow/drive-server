@@ -46,6 +46,14 @@ public class AttachmentInfo extends BusModBase {
           JsonArray datas = body.getArray("datas");
           for (int i = 0; i < datas.length(); i++) {
             JsonObject data = datas.getObject(i);
+            JsonArray tags = data.getArray("tags");
+            JsonArray newTags = Json.createArray();
+            for (int j = 0; j < tags.length(); j++) {
+              if (newTags.indexOf(tags.getString(j)) < 0) {
+                newTags.push(tags.getString(j));
+              }
+            }
+            data.set("tags", newTags);
             String id = data.getString("_id");
             data.remove("_id");
             // 执行插入
