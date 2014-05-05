@@ -36,7 +36,7 @@ public class DateUtil {
    */
   public static String parseTimestamp(long timestamp) {
     Date date = new Date(timestamp);
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     return format.format(date);
   }
 }
