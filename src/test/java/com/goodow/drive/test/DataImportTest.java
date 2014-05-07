@@ -124,8 +124,8 @@ public class DataImportTest extends TestVerticle {
     }
     System.out.println("文件总数量：" + filesDataTemp.length() + "   对应关系总数量：" + tagsDataTemp.length());
     final Bus bus =
-        new WebSocketBus("ws://realtime.goodow.com:8080/eventbus/websocket", Json.createObject()
-            .set("forkLocal", true));
+        new WebSocketBus("ws://test.goodow.com:8080/eventbus/websocket", Json.createObject().set(
+            "forkLocal", true));
 
     bus.registerHandler(Bus.LOCAL_ON_OPEN, new MessageHandler<JsonObject>() {
       @Override
