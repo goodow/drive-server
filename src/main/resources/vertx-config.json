@@ -11,14 +11,14 @@
     "address": "realtime.search"
   },
   "elasticsearch": {
-    "transportAddresses": [{"host": "data.goodow.com", "port": 9300}],
+    "transportAddresses": [{"host": "realtime.goodow.com", "port": 9300}],
     "cluster_name": "elasticsearch",
     "client_transport_sniff": true
   },
 
   "redis": {
     "address": "redis.pub",
-    "host": "data.goodow.com",
+    "host": "realtime.goodow.com",
     "port": 6379
   },
  
