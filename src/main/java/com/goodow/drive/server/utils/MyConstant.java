@@ -1,6 +1,6 @@
 package com.goodow.drive.server.utils;
 
-public class MyConstant {
+public interface MyConstant {
 
   // ES中index的名称
   public static final String ES_INDEX = "drive_test";
@@ -34,5 +34,7 @@ public class MyConstant {
   public static final String ADDR_GEO = ADDR + "auth";
   // 文件地址
   public static final String ADDR_ATTACHMENT = ADDR + "attachment";
+  //Search channel.ES 操作 消息发送频道
+  public static final String SEARCH_CHANNEL = "realtime.search";
 
 }
