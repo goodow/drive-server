@@ -134,19 +134,11 @@ public class DataImportTest extends TestVerticle {
         + sdCard2 + "\r\n");
 
     JsonObject config = Json.createObject();
-    config.set("web_server", Json.createObject().set("port", 8082)).set("realtime_channel",
-        Json.createObject().set("port", 8080)).set("realtime_search",
-        Json.createObject().set("address", "realtime.search")).set(
+    config.set("web_server", Json.createObject().set("port", 8082)).set(
         "elasticsearch",
-        Json.createObject().set(
-            "transportAddresses",
-            Json.createArray().push(
-                Json.createObject().set("host", "realtime.goodow.com").set("port", 9300))).set(
-            "cluster_name", "elasticsearch").set("client_transport_sniff", true)).set(
-        "redis",
-        Json.createObject().set("address", "redis.pub").set("host", "realtime.goodow.com").set(
-            "port", 6379)).set("callback",
-        Json.createObject().set("distance_overflow", "你的设备被锁定，请回到首次使用地点，或者联系服务电话: xxx-xxxx"));
+        Json.createObject().set("transportAddresses",
+            Json.createArray().push(Json.createObject().set("host", "realtime.goodow.com")))).set(
+        "redis", Json.createObject().set("host", "realtime.goodow.com"));
 
     container.deployModule(System.getProperty("vertx.modulename"),
         new org.vertx.java.core.json.JsonObject(config.toJsonString()),
