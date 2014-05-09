@@ -45,9 +45,10 @@ public class InitDataFormExcel {
   // 所有的学期
   private static final List<String> terms = Arrays.asList("上学期", "下学期");
   // 所有的主题
-  private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)","早期阅读",
-      "艺术(美术)", "我有一个幼儿园", "找找.藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色", "暖暖的……",
-      "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "幼儿用书", "教师用书","我想长大", "亲亲热热一家人", "小动物来了", "绿绿的……", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏");
+  private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
+      "早期阅读", "艺术(美术)", "我有一个幼儿园", "找找.藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色",
+      "暖暖的……", "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "幼儿用书", "教师用书", "我想长大", "亲亲热热一家人",
+      "小动物来了", "绿绿的……", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏");
 
   static {
     // 文件后缀和MIME的对应关系
@@ -87,11 +88,10 @@ public class InitDataFormExcel {
 
     searchGradeRelation.put("音频", Arrays.asList(new String[] {"音乐作品音频", "文学作品音频", "音效"}));
 
-    searchGradeRelation.put("电子书", Arrays.asList(new String[] {
-        "早期阅读", "安全教育", "托班"}));
+    searchGradeRelation.put("电子书", Arrays.asList(new String[] {"早期阅读", "安全教育", "托班"}));
   }
 
-  public static void factory(String sdCard1, String sdCard2) {
+  public static void factory(String sdCard1, String sdCard2, String path) {
     FILES_TAGS.clear();
     ERRORS.clear();
     repeatInfo.clear();
@@ -99,8 +99,15 @@ public class InitDataFormExcel {
     SD1_PATH = sdCard1;
     SD2_PATH = sdCard2;
     try {
-      URL url = InitDataFormExcel.class.getResource("/data.xlsx");
-      URL root = InitDataFormExcel.class.getResource("/");
+      URL url = null;
+      URL root = null;
+      if (path.length() == 0) {
+        url = InitDataFormExcel.class.getResource("/data.xlsx");
+        root = InitDataFormExcel.class.getResource("/");
+      } else {
+        url = new URL("file:" + path + "/data.xlsx");
+        root = new URL("file:" + path + "/");
+      }
       List<List<String>> data = ExcelData.getExcelData(url.getPath());
       int rows = data.size();
       for (int i = 0; i < rows; i++) {
