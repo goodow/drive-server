@@ -51,10 +51,10 @@ public class AuthTerminal extends BusModBase {
 
   /**
    * 常规校验
-   * 
+   *
+   * @param rootMessage
    * @author:DingPengwei
    * @date:Apr 21, 2014 5:31:40 PM
-   * @param rootMessage
    */
   private void saveDeviceActivity(final Message<JsonObject> rootMessage) {
     final JsonObject body = rootMessage.body();
@@ -72,11 +72,16 @@ public class AuthTerminal extends BusModBase {
                 Json.createObject().set("address", body.getString("address")).set(
                     "coordinates",
                     Json.createArray().push(body.getNumber("latitude")).push(
-                        body.getNumber("longitude"))).set("radius", body.getNumber("radius")));
+                        body.getNumber("longitude"))
+                ).set("radius", body.getNumber("radius"))
+            );
 
         bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
           @Override
           public void handle(Message<JsonObject> message) {
+            //上线成功 发广播
+            publishMsgFun(body.getString("sid"), body.getNumber("latitude"), body.getNumber(
+                "longitude"), body.getNumber("radius"));
             rootMessage.reply(Json.createObject().set("status", "0").set("reset", "0").set("lock",
                 "0"));
           }
@@ -91,10 +96,15 @@ public class AuthTerminal extends BusModBase {
                 Json.createObject().set("address", body.getString("address")).set(
                     "coordinates",
                     Json.createArray().push(body.getNumber("latitude")).push(
-                        body.getNumber("longitude"))).set("radius", body.getNumber("radius")));
+                        body.getNumber("longitude"))
+                ).set("radius", body.getNumber("radius"))
+            );
         bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
           @Override
           public void handle(Message<JsonObject> messageDb) {
+            //上线成功 发广播
+            publishMsgFun(body.getString("sid"), body.getNumber("latitude"), body.getNumber(
+                "longitude"), body.getNumber("radius"));
             rootMessage.reply(Json.createObject().set("status", "1").set("reset", "0").set("lock",
                 "0"));
           }
@@ -108,10 +118,10 @@ public class AuthTerminal extends BusModBase {
 
   /**
    * 首次校验或者重置后首次校验
-   * 
+   *
+   * @param rootMessage
    * @author:DingPengwei
    * @date:Apr 21, 2014 5:15:28 PM
-   * @param rootMessage
    */
   private void saveDeviceInfo(final Message<JsonObject> rootMessage) {
     JsonObject msg =
@@ -125,4 +135,23 @@ public class AuthTerminal extends BusModBase {
       }
     });
   }
+
+  /**
+   * 安卓设备上线发送广播
+   *
+   * @param deviceId  设备ID
+   * @param latitude  纬度
+   * @param longitude 经度
+   * @param radius    精度
+   */
+  private void publishMsgFun(final String deviceId, final double latitude, final double longitude,
+                             final double radius) {
+    //封装数据
+    JsonObject obj = Json.createObject().set("deviceId", deviceId).set(
+        "coordinates", Json.createArray().push(longitude).push(latitude)).set("radius", radius)
+        .set("status","login");
+    //发送广播
+    bus.publish(MyConstant.DEVICE_STATUS, obj);
+  }
+
 }

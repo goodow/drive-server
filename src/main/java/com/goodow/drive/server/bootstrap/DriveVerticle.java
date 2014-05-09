@@ -9,9 +9,10 @@ import org.vertx.java.busmods.BusModBase;
 import org.vertx.java.core.AsyncResult;
 import org.vertx.java.core.AsyncResultHandler;
 import org.vertx.java.core.Future;
+import com.goodow.drive.server.deviceManager.DeviceStatusManager;
 
 public class DriveVerticle extends BusModBase {
-  private int countDownLatch = 6;
+  private int countDownLatch = 7;
 
   @Override
   public void start(final Future<Void> startedResult) {
@@ -34,5 +35,6 @@ public class DriveVerticle extends BusModBase {
     container.deployVerticle(PlayerAnalytics.class.getName(), config, doneHandler);
     container.deployVerticle(SystimeAnalytics.class.getName(), config, doneHandler);
     container.deployVerticle(AuthTerminal.class.getName(), config, doneHandler);
+    container.deployVerticle(DeviceStatusManager.class.getName(), config, doneHandler);
   }
 }

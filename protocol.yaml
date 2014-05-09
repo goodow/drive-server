@@ -31,3 +31,11 @@ duration: 10 # 持续时间, 单位秒
 address: 北京市海淀区海淀大街3号-3288号
 coordinates: [-71.34, 41.12] # [经度, 纬度] http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-geo-point-type.html
 radius: 44.94444274902344 # 精度, 单位米
+
+# type: deviceStatus
+---
+deviceId: sid # 设备号
+owner: 北京市幼儿园 # 使用者
+coordinates: [-71.34, 41.12] # [经度, 纬度]
+radius: 44.94444274902344 # 精度, 单位米
+status: login # 在线状态

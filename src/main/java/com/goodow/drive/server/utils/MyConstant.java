@@ -17,6 +17,8 @@ public interface MyConstant {
   // 设备行为(地理校验)统计
   public static final String ES_TYPE_DEVICEACTIVITY = "deviceActivity";
 
+  public static final String ES_TYPE_DEVICESTATUS = "deviceStatus";
+
   /**
    * 服务器监听的地址
    */
@@ -34,5 +36,7 @@ public interface MyConstant {
   public static final String ADDR_ATTACHMENT = ADDR + "db";
   // Search channel.ES 操作 消息发送频道
   public static final String SEARCH_CHANNEL = "realtime.search";
+  //设备上下线
+  public static final String DEVICE_STATUS = "drive.devicestatus";
 
 }
