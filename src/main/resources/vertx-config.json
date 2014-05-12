@@ -3,26 +3,36 @@
     "port": 8082
   },
   
+  "realtime_store": {
+    "address": "realtime.store",
+    "redis": {
+      "address": "realtime.redis",
+      "host": "realtime.goodow.com",
+      "port": 6379
+    },
+    "rest": {
+      "port": 1987,
+      "host": "0.0.0.0",
+      "path": "/store"
+    }
+  },
+
   "realtime_channel": {
-    "port": 8080
+    "port": 1986,
+    "sjs_config": {
+      "prefix": "/channel"
+    },
+
+    "bridge_config": {
+      "ping_interval": 3600000
+    }
   },
   
   "realtime_search": {
-    "address": "realtime.search"
-  },
-  "elasticsearch": {
+    "address": "realtime.search",
     "transportAddresses": [{"host": "realtime.goodow.com", "port": 9300}],
     "cluster_name": "elasticsearch",
     "client_transport_sniff": true
-  },
+  }
 
-  "redis": {
-    "address": "redis.pub",
-    "host": "realtime.goodow.com",
-    "port": 6379
-  },
- 
-  "callback": {
-    "distance_overflow": "你的设备被锁定，请回到首次使用地点，或者联系服务电话: xxx-xxxx"
-  } 
 }
