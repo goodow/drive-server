@@ -134,12 +134,16 @@ public class DataImportTest extends TestVerticle {
         + sdCard2 + "\r\n");
 
     JsonObject config = Json.createObject();
-    config.set("web_server", Json.createObject().set("port", 8082)).set(
-        "elasticsearch",
+    JsonObject web_server = Json.createObject().set("port", 8082);
+    config.set("web_server", web_server);
+    JsonObject realtime_store =
+        Json.createObject().set("redis", Json.createObject().set("host", "realtime.goodow.com"));
+    config.set("realtime_store", realtime_store);
+    JsonObject realtime_search =
         Json.createObject().set("transportAddresses",
-            Json.createArray().push(Json.createObject().set("host", "realtime.goodow.com")))).set(
-        "redis", Json.createObject().set("host", "realtime.goodow.com"));
-
+            Json.createArray().push(Json.createObject().set("host", "realtime.goodow.com")));
+    config.set("realtime_search", realtime_search);
+    System.out.println(config);
     container.deployModule(System.getProperty("vertx.modulename"),
         new org.vertx.java.core.json.JsonObject(config.toJsonString()),
         new AsyncResultHandler<String>() {
