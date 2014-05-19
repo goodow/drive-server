@@ -1,14 +1,15 @@
 package com.goodow.drive.server.bootstrap;
 
 import com.goodow.realtime.channel.Bus;
-import com.goodow.realtime.channel.server.VertxBus;
+import com.goodow.realtime.channel.server.impl.VertxBus;
 import com.goodow.realtime.channel.util.IdGenerator;
 
-import com.alienos.guice.VertxModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
+
+import com.alienos.guice.VertxModule;
 
 import org.vertx.java.core.Vertx;
 import org.vertx.java.platform.Container;
