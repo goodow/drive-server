@@ -19,12 +19,19 @@ user: 北京市幼儿园 # 使有者
 
 # type: device
 ---
-_id: sid # 设备号
+_id: sid # 设备号, MAC地址
+code: 098998ad # 设备编码
 owner: 北京市幼儿园 # 所有者
+registAddress: 北京市海淀区海淀大街3号-3288号 # 注册地址
+registCoordinates: [-71.34, 41.12] # [经度, 纬度] 注册经纬度 http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/mapping-geo-point-type.html
+radius: 44.94444274902344 # 精度, 单位米
+reset: false # [false不重置 | true重置 default false]
+lock: false # [false不锁定 | true锁定 default false]
 
 # type: deviceActivity
 ---
 deviceId: sid # 设备号
+code: 098998ad # 设备编码
 user: 北京幼儿园 # 使用者
 open: 2014-11-15T14:12:12 # 开机时间戳
 duration: 10 # 持续时间, 单位秒

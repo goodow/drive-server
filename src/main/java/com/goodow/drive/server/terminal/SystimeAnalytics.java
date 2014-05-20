@@ -37,7 +37,7 @@ public class SystimeAnalytics extends BusModBase implements MyConstant {
     bus.registerHandler(ADDR_SYSTEM, new MessageHandler<JsonObject>() {
 
       @Override
-      public void handle(Message<JsonObject> rootMessage) {
+      public void handle(final Message<JsonObject> rootMessage) {
         JsonObject body = rootMessage.body();
         final String sid = body.getString("sid");
         final JsonArray analytics = body.getArray("timestamp");
@@ -52,13 +52,23 @@ public class SystimeAnalytics extends BusModBase implements MyConstant {
             for (int i = 0; i < analytics.length(); i++) {
               JsonObject object = analytics.getObject(i);
               long openTime = (long) object.getNumber("openTime");
-              long lastTime = (long) object.getNumber("lastTime");
-              analyticsArray.push(Json.createObject().set("deviceId", sid)
-                  .set("user", devicesOwner).set("open", DateUtil.parseTimestamp(openTime)).set(
-                      "duration", lastTime));
+              long duration = (long) object.getNumber("duration");
+              JsonArray jsonArray = object.getArray("coordinates");
+              String address = object.getString("address");
+              double radius = object.getNumber("radius");
+              analyticsArray.push(
+                  Json.createObject()
+                      .set("deviceId", sid)
+                      .set("user", devicesOwner)
+                      .set("open", DateUtil.parseTimestamp(openTime))
+                      .set("duration", duration)
+                      .set("address",address)
+                      .set("coordinates",jsonArray)
+                      .set("radius",radius)
+              );
               countDownLatch++;
             }
-            savePlayAnalytics(message, analyticsArray);
+            savePlayAnalytics(rootMessage, analyticsArray);
           }
         });
       }
