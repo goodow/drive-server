@@ -40,7 +40,7 @@ public class AttachmentInfo extends BusModBase {
         JsonObject body = message.body();
         String action = body.getString("action");
         if ("delete".equals(action)) {
-          message.reply(Json.createObject().set("status", "ok"));
+          message.reply(Json.createObject().set("status", "ok"),null);
         }
         if ("put".equals(action)) {
           JsonArray datas = body.getArray("datas");
@@ -63,7 +63,7 @@ public class AttachmentInfo extends BusModBase {
             bus.send("realtime.search", msgNew, new MessageHandler<JsonObject>() {
               @Override
               public void handle(Message<JsonObject> resultMessage) {
-                message.reply(Json.createObject().set("status", "ok"));
+                message.reply(Json.createObject().set("status", "ok"),null);
               }
             });
           }

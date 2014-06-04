@@ -66,21 +66,21 @@ public class AuthTerminal extends BusModBase {
       double number = body.getNumber("distance");
       if (number > EFFECTIVE_DISTANCE) {
         rootMessage
-            .reply(Json.createObject().set("status", 2).set("reset", false).set("lock", false));
+            .reply(Json.createObject().set("status", 2).set("reset", false).set("lock", false),null);
       } else {
         //上线成功 发广播
         publishMsgFun(body.getString("sid"), body.getNumber("latitude"), body.getNumber(
             "longitude"), body.getNumber("radius"));
         rootMessage.reply(Json.createObject().set("status", 0).set("reset", false).set("lock",
-            false));
+            false),null);
       }
     } else {
       if ((int) body.getNumber("errorcode") == 161) {// 客户端定位成功执行插入地理信息
         rootMessage.reply(Json.createObject().set("status", 1).set("reset", false).set("lock",
-            false));
+            false),null);
       } else {// 客户端定位失败
         rootMessage
-            .reply(Json.createObject().set("status", 1).set("reset", false).set("lock", false));
+            .reply(Json.createObject().set("status", 1).set("reset", false).set("lock", false),null);
       }
     }
   }
@@ -116,7 +116,7 @@ public class AuthTerminal extends BusModBase {
       public void handle(Message<JsonObject> messageDb) {
         log.info("insert sucess will reply");
           //首次校验不应发送数据到deviceActivity
-        rootMessage.reply(Json.createObject().set("status", 0).set("reset", false).set("lock", false));
+        rootMessage.reply(Json.createObject().set("status", 0).set("reset", false).set("lock", false),null);
       }
     });
   }

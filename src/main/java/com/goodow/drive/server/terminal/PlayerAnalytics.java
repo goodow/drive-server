@@ -102,7 +102,7 @@ public class PlayerAnalytics extends BusModBase implements MyConstant {
         public void handle(Message<JsonObject> messageDb) {
           countDownLatch--;
           if (countDownLatch == 0) {
-            rootMessage.reply(Json.createObject().set("status", "ok"));
+            rootMessage.reply(Json.createObject().set("status", "ok"),null);
           }
         }
       });
