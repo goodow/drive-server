@@ -5,6 +5,7 @@ import com.goodow.drive.server.utils.MyConstant;
 import com.goodow.realtime.channel.Bus;
 import com.goodow.realtime.channel.Message;
 import com.goodow.realtime.channel.MessageHandler;
+import com.goodow.realtime.core.Handler;
 import com.goodow.realtime.json.Json;
 import com.goodow.realtime.json.JsonArray;
 import com.goodow.realtime.json.JsonObject;
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
  * @Des:设备校验
  */
 @GuiceVertxBinding(modules = {DriveModule.class})
-public class AuthTerminal extends BusModBase {
+public class AuthTerminal extends BusModBase implements MyConstant{
   private static Logger log = Logger.getLogger(AuthTerminal.class.getName());
   @Inject
   private Bus bus;
@@ -62,27 +63,44 @@ public class AuthTerminal extends BusModBase {
    */
   private void saveDeviceActivity(final Message<JsonObject> rootMessage) {
     final JsonObject body = rootMessage.body();
-    if (body.has("distance")) {
-      double number = body.getNumber("distance");
-      if (number > EFFECTIVE_DISTANCE) {
-        rootMessage
-            .reply(Json.createObject().set("status", 2).set("reset", false).set("lock", false),null);
-      } else {
-        //上线成功 发广播
-        publishMsgFun(body.getString("sid"), body.getNumber("latitude"), body.getNumber(
-            "longitude"), body.getNumber("radius"));
-        rootMessage.reply(Json.createObject().set("status", 0).set("reset", false).set("lock",
-            false),null);
+    String sid = body.getString("sid");
+    log.info("#########"+sid);
+    JsonObject search =
+        Json.createObject()
+            .set("action", "get")
+            .set("_index", MyConstant.ES_INDEX)
+            .set("_type", MyConstant.ES_TYPE_DEVICE)
+            .set("_id", sid);
+    bus.send(SEARCH_CHANNEL,search,new MessageHandler<JsonObject>() {
+      @Override
+      public void handle(Message<JsonObject> message) {
+        log.info(message.toString()+"--------------");
+        int reset = (int) message.body().getObject("_source").getNumber("reset");
+        int lock = (int) message.body().getObject("_source").getNumber("lock");
+        if (body.has("distance")) {
+          double number = body.getNumber("distance");
+          if (number > EFFECTIVE_DISTANCE) {
+            rootMessage
+                .reply(Json.createObject().set("status", 2).set("reset", reset == 0?false:true).set("lock", lock == 0?false:true),null);
+          } else {
+            //上线成功 发广播
+            publishMsgFun(body.getString("sid"), body.getNumber("latitude"), body.getNumber(
+                "longitude"), body.getNumber("radius"));
+            rootMessage.reply(Json.createObject().set("status", 0).set("reset", reset == 0?false:true).set("lock",
+                lock == 0?false:true),null);
+          }
+        } else {
+          if ((int) body.getNumber("errorcode") == 161) {// 客户端定位成功执行插入地理信息
+            rootMessage.reply(Json.createObject().set("status", 1).set("reset", reset == 0?false:true).set("lock",
+                lock == 0?false:true),null);
+          } else {// 客户端定位失败
+            rootMessage
+                .reply(Json.createObject().set("status", 1).set("reset", reset == 0?false:true).set("lock", lock == 0?false:true),null);
+          }
+        }
       }
-    } else {
-      if ((int) body.getNumber("errorcode") == 161) {// 客户端定位成功执行插入地理信息
-        rootMessage.reply(Json.createObject().set("status", 1).set("reset", false).set("lock",
-            false),null);
-      } else {// 客户端定位失败
-        rootMessage
-            .reply(Json.createObject().set("status", 1).set("reset", false).set("lock", false),null);
-      }
-    }
+    });
+
   }
 
   /**
@@ -93,21 +111,23 @@ public class AuthTerminal extends BusModBase {
    * @date:Apr 21, 2014 5:15:28 PM
    */
   private void saveDeviceInfo(final Message<JsonObject> rootMessage) {
+    final JsonObject body = rootMessage.body();
     JsonObject msg =
         Json.createObject()
             .set("action", "index")
             .set("_index", MyConstant.ES_INDEX)
             .set("_type", MyConstant.ES_TYPE_DEVICE)
-            .set("_id", rootMessage.body().getString("sid"))
+            .set("_id", body.getString("sid"))
             .set("source", Json.createObject()
                 //设备编码.这里需要前台传递
                 .set("code",UUID.randomUUID().toString())
-                .set("owner", rootMessage.body().getString("schoolName"))
-                .set("registAddress", rootMessage.body().getString("address"))
+                .set("owner", body.getString("schoolName"))
+                .set("contact", body.getString("contacts"))
+                .set("registAddress", body.getString("address"))
                 .set("registCoordinates", Json.createArray()
-                    .push(rootMessage.body().getNumber("latitude"))
-                    .push(rootMessage.body().getNumber("longitude")))
-                .set("radius", rootMessage.body().getNumber("radius"))
+                    .push(body.getNumber("latitude"))
+                    .push(body.getNumber("longitude")))
+                .set("radius", body.getNumber("radius"))
                 .set("reset", 0)
                 .set("lock", 0));
     log.info("###########device insert########+"+msg.toString());
@@ -115,6 +135,9 @@ public class AuthTerminal extends BusModBase {
       @Override
       public void handle(Message<JsonObject> messageDb) {
         log.info("insert sucess will reply");
+        //上线成功 发广播
+        publishMsgFun(body.getString("sid"), body.getNumber("latitude"), body.getNumber(
+            "longitude"), body.getNumber("radius"));
           //首次校验不应发送数据到deviceActivity
         rootMessage.reply(Json.createObject().set("status", 0).set("reset", false).set("lock", false),null);
       }
