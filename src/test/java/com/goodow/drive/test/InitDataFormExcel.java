@@ -228,6 +228,9 @@ public class InitDataFormExcel {
         }
         System.out.println("\r\n==========EXCEL文件采集信息出现以上错误，数据初始化终止=======\r\n ");
       } else {
+        if(repeatInfo.length() == 0){
+            System.out.println("\r\n==========EXCEL文件采集信息完全正确=======\r\n ");
+        }
         for (int i = 0; i < rows; i++) {
           if (i == 0) {
             continue;
