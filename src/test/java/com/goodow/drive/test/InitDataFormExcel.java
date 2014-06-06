@@ -48,7 +48,7 @@ public class InitDataFormExcel {
   private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
       "早期阅读", "艺术(美术)", "我有一个幼儿园", "找找.藏藏", "飘飘,跳跳,滚滚", "我会……", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色",
       "暖暖的……", "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "幼儿用书", "教师用书", "我想长大", "亲亲热热一家人",
-      "小动物来了", "绿绿的……", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏");
+      "小动物来了", "绿绿的……", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏","托班");
 
   static {
     // 文件后缀和MIME的对应关系
@@ -189,11 +189,11 @@ public class InitDataFormExcel {
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
           if (list.get(10) != null && catagories.contains(list.get(10).trim())
               && list.get(4) != null && !list.get(10).trim().equals(list.get(4).trim())) {
-            ERRORS.push("error 第" + i + "行一级搜索不合格，一级搜索在" + catagories.toString()
+            ERRORS.push("error 第" + i + "行一级搜索[" + list.get(10).trim() + "]不合格，一级搜索在" + catagories.toString()
                 + "中时,要和素材类别一致,否则会造成重复显示");
           }
           if (list.get(10) == null || !mime.containsKey(list.get(10).trim())) {
-            ERRORS.push("error 第" + i + "行一级搜索不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中");
+            ERRORS.push("error 第" + i + "行一级搜索[" + list.get(10).trim() + "]不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中");
           } else {
             if (list.size() > 11 && list.get(11) != null) {
               // 有二级分类
@@ -201,7 +201,7 @@ public class InitDataFormExcel {
                   || !searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
                 // 但和一级分类不符合
                 ERRORS.push("error 第" + i
-                    + "行一级搜索和二级搜索对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中，且对应关系是否符合对应关系");
+                    + "行一级搜索[" + list.get(10).trim() + "]和二级搜索[ " + list.get(11).trim() + " ]对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中，且对应关系是否符合对应关系");
               }
 
               if (list.get(4) != null && !list.get(11).trim().equals(list.get(4))
