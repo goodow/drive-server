@@ -91,7 +91,7 @@ public class InitDataFormExcel {
     searchGradeRelation.put("电子书", Arrays.asList(new String[] {"早期阅读", "安全教育", "托班"}));
   }
 
-  public static void factory(String sdCard1, String sdCard2, String path) {
+  public static void factory(String sdCard1, String sdCard2, String path,String fileName) {
     FILES_TAGS.clear();
     ERRORS.clear();
     repeatInfo.clear();
@@ -101,11 +101,14 @@ public class InitDataFormExcel {
     try {
       URL url = null;
       URL root = null;
+
+      String fName = "".equals(fileName)?"data.xlsx":fileName;
+
       if (path.length() == 0) {
-        url = InitDataFormExcel.class.getResource("/data.xlsx");
+        url = InitDataFormExcel.class.getResource("/"+fName);
         root = InitDataFormExcel.class.getResource("/");
       } else {
-        url = new URL("file:" + path + "/data.xlsx");
+        url = new URL("file:" + path + "/"+fName);
         root = new URL("file:" + path + "/");
       }
       List<List<String>> data = ExcelData.getExcelData(url.getPath());

@@ -28,7 +28,7 @@ public class DataImportTest extends TestVerticle {
   private static String sdCard2 = "/mnt/sdcard";
   private static String sid = "sid.drive.db";// 提示：sid已经修改为mac
   private static String testResPath = "";
-
+  private static String fileName= "";
   private static final JsonArray insertingFiles = Json.createArray();
 
   private static Map<String, Integer> SUCCESS_FILE_COUNTER = new HashMap<String, Integer>();
@@ -129,7 +129,7 @@ public class DataImportTest extends TestVerticle {
     sdCard1 = System.getProperty("sd1", sdCard1);
     sdCard2 = System.getProperty("sd2", sdCard2);
     testResPath = System.getProperty("respath", testResPath);
-
+    fileName = "".equals(System.getProperty("filename", fileName))?"data.xlsx":System.getProperty("filename", fileName);
     System.out
         .println("命令样例:mvn clean test -D sid=mysid -D f=200 -D r=1000 -D sd1=mysd1 -D sd2=mysd2 -D respath=respath  \r\n");
     System.out.println("输入参数：sid=" + sid + "  f=" + number + "  sd1=" + sdCard1 + "   sd2="
@@ -167,7 +167,7 @@ public class DataImportTest extends TestVerticle {
                   sdcards = body.getArray("sdcard");
                 }
                 InitDataFormExcel.factory(sdcards.length() >= 1 ? sdcards.getString(0) : sdCard1,
-                    sdcards.length() >= 2 ? sdcards.getString(1) : sdCard2, testResPath);
+                    sdcards.length() >= 2 ? sdcards.getString(1) : sdCard2, testResPath,fileName);
                 setUp();
                 startTests();
                 // message.reply(Json.createObject().set("status", "ok"));

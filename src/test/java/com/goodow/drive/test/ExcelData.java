@@ -1,6 +1,8 @@
 package com.goodow.drive.test;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -63,11 +65,30 @@ public class ExcelData {
           if (row.getCell(c) == null || row.getCell(c).toString().trim().length() == 0) {
             blankCell++;
           } else {
-            if (c == 0 && Cell.CELL_TYPE_NUMERIC == row.getCell(c).getCellType()) { // 如果是数字型
-              cell = row.getCell(c).toString();
-              cell = cell.substring(0, cell.indexOf("."));
-            } else {
-              cell = row.getCell(c).toString();
+
+            FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+
+            CellValue cellValue = evaluator.evaluate(row.getCell(c));
+
+            switch (cellValue.getCellType()) {
+              case Cell.CELL_TYPE_BOOLEAN:
+                cell = cellValue.getBooleanValue() + "";
+                break;
+              case Cell.CELL_TYPE_NUMERIC:
+                cell = cellValue.getNumberValue() + "";
+                cell = cell.substring(0, cell.indexOf("."));
+                break;
+              case Cell.CELL_TYPE_STRING:
+                cell = cellValue.getStringValue() + "";
+                break;
+              case Cell.CELL_TYPE_BLANK:
+                break;
+              case Cell.CELL_TYPE_ERROR:
+                break;
+
+              // CELL_TYPE_FORMULA will never happen
+              case Cell.CELL_TYPE_FORMULA:
+                break;
             }
           }
           rowlist.add(cell);
