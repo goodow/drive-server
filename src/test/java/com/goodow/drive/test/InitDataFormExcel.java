@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * 该文件运行前要和excel表格对照是否是一致的 0列是编号 1列是文件现实名称 2列是文件路径 3列是文件缩略图路径 第4列是素材类别 第5列是主题分类 第6列是班级 第7列是学期
@@ -21,6 +22,7 @@ import java.util.Map;
  */
 public class InitDataFormExcel {
 
+  public static final Logger log = Logger.getLogger(InitDataFormExcel.class.getName());
   public static final JsonArray FILES_TAGS = Json.createArray();
   private static final Map<String, String> mime = new HashMap<String, String>();
   private static boolean check = true;// 标记要不要校验文件属性
@@ -92,6 +94,7 @@ public class InitDataFormExcel {
   }
 
   public static void factory(String sdCard1, String sdCard2, String path,String fileName) {
+    log.info("sdCard1:"+sdCard1+"  sdCard2:"+sdCard2+ "  path:"+path+"  fileName:"+fileName);
     FILES_TAGS.clear();
     ERRORS.clear();
     repeatInfo.clear();
@@ -103,7 +106,7 @@ public class InitDataFormExcel {
       URL root = null;
 
       String fName = "".equals(fileName)?"data.xlsx":fileName;
-
+      log.info("fName:"+fName);
       if (path.length() == 0) {
         url = InitDataFormExcel.class.getResource("/"+fName);
         root = InitDataFormExcel.class.getResource("/");
@@ -127,51 +130,57 @@ public class InitDataFormExcel {
           if (list.size() < 11) {
             ERRORS.push("error 第" + i + "行文件属性缺失[文件编号|文件显示名称|文件路径|素材类别|搜索一级分类]都不能为空");
           }
-
+          log.info("判断文件编号是否存在：list.get(0):"+list.get(0));
           // 判断文件编号是否存在
           if (list.get(0) == null || list.get(0).trim().equals("")) {
             ERRORS.push("error 第" + i + "行文件编号不能为空");
           }
-
+          log.info("判断文件显示名称是否存在：list.get(1):"+list.get(1));
           // 判断文件显示名称是否存在
           if (list.get(1) == null || list.get(1).trim().equals("")) {
             ERRORS.push("error 第" + i + "行文件显示名称不能为空");
           }
-
+          log.info("检测ID和文件名的重复性");
           // 检测ID和文件名的重复性
-          if (list.get(0) != null && list.get(1) != null) {
+          if (list.get(0) != null && list.get(13) != null) {
             if (repeatIdNames.containsKey((list.get(0).trim()))) {
               ERRORS.push("error 第" + i + "行文件编号已经存在");
             }
-            if (repeatIdNames.containsValue((list.get(1).trim()))) {
-              repeatInfo.push("alert 第" + i + "行文件名称[" + list.get(1).trim() + "]有重复");
+            if (repeatIdNames.containsValue((list.get(13).trim()))) {
+              repeatInfo.push("alert 第" + i + "行文件名称有重复");
             }
-            repeatIdNames.put(list.get(0).trim(), list.get(1).trim());
+            repeatIdNames.put(list.get(0).trim(), list.get(13).trim());
           }
-
+          log.info("判断文件后缀是否合法");
           // 判断文件后缀是否合法
           if (list.get(2) == null
               || !suffix.contains(list.get(2).trim().substring(list.get(2).trim().lastIndexOf("."),
                   list.get(2).trim().length()))) {
             ERRORS.push("error 第" + i + "行文件后缀无效");
           }
-
+          log.info("判断文件属性路径是否存在");
+          log.info("root:"+root);
+          log.info("root.getPath():"+root.getPath());
+          log.info("list.get(2):"+list.get(2));
           // 判断文件属性路径是否存在
           if (!new File(root.getPath() + list.get(2).trim()).exists()) {
             ERRORS.push("error 第" + i + "行文件路径" + list.get(2).trim() + "不存在");
           }
+          log.info("判断文件缩略图是否存在");
+          log.info("root:"+root);
+          log.info("root.getPath():"+root.getPath());
 
           // 判断文件缩略图是否存在
           if (list.get(3) != null && !new File(root.getPath() + list.get(3).trim()).exists()) {
             ERRORS.push("error 第" + i + "行缩略图路径" + list.get(3).trim() + "不存在");
           }
-
+          log.info("判断文件素材类别");
           // 判断文件素材类别
           if (list.get(4) == null || !catagories.contains(list.get(4).trim())) {
             ERRORS.push("error 第" + i + "行素材类别" + list.get(4).trim() + "不存在，或素材类别不再19个分类中");
           }
-
-          // 第5列是主题分类 第6列是班级 第7列是学期 第8列是主题或领域
+          log.info("第5列是主题分类 第6列是班级 第7列是学期 第8列是主题或领域");
+          // 第5列是主题分类 第6列是班级 第7列是学期(平台用15列) 第8列是主题或领域(平台用14列)
           if (list.get(5) != null && !themes.contains(list.get(5).trim())) {
             ERRORS.push("error 第" + i + "行主题[" + list.get(5).trim() + "]不在" + themes.toString()
                 + "中");
@@ -180,15 +189,15 @@ public class InitDataFormExcel {
             ERRORS.push("error 第" + i + "行班级[" + list.get(6).trim() + "]不在" + grades.toString()
                 + "中");
           }
-          if (list.get(7) != null && !terms.contains(list.get(7).trim())) {
-            ERRORS.push("error 第" + i + "行学期[" + list.get(7).trim() + "]不在" + terms.toString()
+          if (list.get(15) != null && !terms.contains(list.get(15).trim())) {
+            ERRORS.push("error 第" + i + "行学期[" + list.get(15).trim() + "]不在" + terms.toString()
                 + "中");
           }
-          if (list.get(8) != null && !topics.contains(list.get(8).trim())) {
-            ERRORS.push("error 第" + i + "行领域[" + list.get(8).trim() + "]不在" + topics.toString()
+          if (list.get(14) != null && !topics.contains(list.get(14).trim())) {
+            ERRORS.push("error 第" + i + "行领域[" + list.get(14).trim() + "]不在" + topics.toString()
                 + "中");
           }
-
+          log.info("检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类");
           // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
           if (list.get(10) != null && catagories.contains(list.get(10).trim())
               && list.get(4) != null && !list.get(10).trim().equals(list.get(4).trim())) {
