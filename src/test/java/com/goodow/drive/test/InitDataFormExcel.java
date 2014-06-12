@@ -120,8 +120,8 @@ public class InitDataFormExcel {
         if (i == 0) {
           continue;
         }
-        List<String> list = data.get(i);
-
+        List<String> list = data.get(i); 
+        log.info("当前行数据："+list.toString());
         /**
          * 文件属性检测 0列是编号 1列是文件现实名称 2列是文件路径 3列是文件缩略图路径 第四列是素材类别 第10列是搜索一级分类
          */
@@ -161,7 +161,7 @@ public class InitDataFormExcel {
           log.info("判断文件属性路径是否存在");
           log.info("root:"+root);
           log.info("root.getPath():"+root.getPath());
-          log.info("list.get(2):"+list.get(2));
+          log.info("list.get(2):"+(list.get(2)==null?"null 行号："+i+" ":""));
           // 判断文件属性路径是否存在
           if (!new File(root.getPath() + list.get(2).trim()).exists()) {
             ERRORS.push("error 第" + i + "行文件路径" + list.get(2).trim() + "不存在");
