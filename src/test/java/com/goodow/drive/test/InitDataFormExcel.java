@@ -114,6 +114,7 @@ public class InitDataFormExcel {
         url = new URL("file:" + path + "/"+fName);
         root = new URL("file:" + path + "/");
       }
+      log.info("url:"+url.toString()+"    root:"+root.toString());
       List<List<String>> data = ExcelData.getExcelData(url.getPath());
       int rows = data.size();
       for (int i = 0; i < rows; i++) {

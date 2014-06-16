@@ -47,7 +47,7 @@ public class InitEs extends TestCase {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public void test() throws FileNotFoundException, IOException {
+  public void test() throws Exception {
     URL url = InitDataFormExcel.class.getResource("/data.xlsx");
     List<List<String>> data = ExcelData.getExcelData(url.getPath());
     int rows = data.size();

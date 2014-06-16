@@ -9,10 +9,10 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * 读取Excel工具
@@ -21,7 +21,7 @@ import java.util.List;
  * 
  */
 public class ExcelData {
-
+  public static final Logger log = Logger.getLogger(ExcelData.class.getName());
   /**
    * 获取行中单元格的多少
    * 
@@ -40,9 +40,8 @@ public class ExcelData {
     return cellsCount + 1;
   }
 
-  public static List<List<String>> getExcelData(String path) throws FileNotFoundException,
-      IOException {
-
+  public static List<List<String>> getExcelData(String path) throws Exception {
+    log.info("start load data...........");
     List<List<String>> datas = new ArrayList<List<String>>();
     XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(path));
 
@@ -100,6 +99,7 @@ public class ExcelData {
         }
       }
     }
+    log.info("end load data...........");
     return datas;
   }
 
