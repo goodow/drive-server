@@ -55,3 +55,12 @@ userName: 小明 # 系统操作用户
 operation: 0 # 0表示锁定设备，1表示解锁设备，2表示重置设备，3表示取消重置设备
 deviceId: 00:11:7f:86:55:53 # 设备mac
 datetime: 2014-11-15T14:12:12 # 操作时间
+
+# type: user
+---
+_id: 090ad # 用户id
+username: benjamin # 登录名
+password: pass123 # 密码
+displayName: benjamin # optional 显示的用户名
+photoUrl: http://goodow.com/a.jpg # optional 用户头像
+
