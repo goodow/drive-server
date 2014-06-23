@@ -131,7 +131,7 @@ public class AuthTerminal extends BusModBase implements MyConstant{
                 .set("reset", 0)
                 .set("lock", 0));
     log.info("###########device insert########+"+msg.toString());
-    bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
+    bus.send(MyConstant.SEARCH_CHANNEL, msg, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> messageDb) {
         log.info("insert sucess will reply");

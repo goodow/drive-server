@@ -60,7 +60,7 @@ public class AttachmentInfo extends BusModBase {
             JsonObject msgNew =
                 Json.createObject().set("action", "index").set("_index", MyConstant.ES_INDEX).set(
                     "_type", MyConstant.ES_TYPE_ATTACHMENT).set("_id", id).set("source", data);
-            bus.send("realtime.search", msgNew, new MessageHandler<JsonObject>() {
+            bus.send(MyConstant.SEARCH_CHANNEL, msgNew, new MessageHandler<JsonObject>() {
               @Override
               public void handle(Message<JsonObject> resultMessage) {
                 message.reply(Json.createObject().set("status", "ok"),null);

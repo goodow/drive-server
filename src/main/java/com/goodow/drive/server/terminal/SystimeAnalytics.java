@@ -88,7 +88,7 @@ public class SystimeAnalytics extends BusModBase implements MyConstant {
       JsonObject msg =
           Json.createObject().set("action", "index").set("_index", ES_INDEX).set("_type",
               ES_TYPE_DEVICEACTIVITY).set("source", analyticsArray.getObject(i));
-      bus.send("realtime.search", msg, new MessageHandler<JsonObject>() {
+      bus.send(MyConstant.SEARCH_CHANNEL, msg, new MessageHandler<JsonObject>() {
         @Override
         public void handle(Message<JsonObject> messageDb) {
           countDownLatch--;

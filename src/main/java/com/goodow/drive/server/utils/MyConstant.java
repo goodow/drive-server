@@ -23,20 +23,20 @@ public interface MyConstant {
    * 服务器监听的地址
    */
   // 前缀
-  public static final String ADDR = "sid.drive.";
+  public static final String ADDR = "drive/";
   // 初始化数据库
-  public static final String ADDR_INIT = "db.initial";
+  public static final String ADDR_INIT = "db/initial";
   // 播放统计
-  public static final String ADDR_PLAYER = ADDR + "player.analytics";
+  public static final String ADDR_PLAYER = ADDR + "player/analytics";
   // 开关机统计
-  public static final String ADDR_SYSTEM = ADDR + "systime.analytics";
+  public static final String ADDR_SYSTEM = ADDR + "systime/analytics";
   // 地理校验
   public static final String ADDR_GEO = ADDR + "auth";
   // 文件地址
   public static final String ADDR_ATTACHMENT = ADDR + "db";
   // Search channel.ES 操作 消息发送频道
-  public static final String SEARCH_CHANNEL = "realtime.search";
+  public static final String SEARCH_CHANNEL = "realtime/search";
   //设备上下线
-  public static final String DEVICE_STATUS = "drive.devicestatus";
+  public static final String DEVICE_STATUS = "drive/devicestatus";
 
 }
