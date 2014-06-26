@@ -16,9 +16,8 @@ import java.util.logging.Logger;
 /**
  * 该文件运行前要和excel表格对照是否是一致的 0列是编号 1列是文件现实名称 2列是文件路径 3列是文件缩略图路径 第4列是素材类别 第5列是主题分类 第6列是班级 第7列是学期
  * 第8列是主题或领域 第9列是活动 第10列是搜索一级分类 第11列是搜索二级分类 第12列是搜索关键字
- * 
+ *
  * @author dpw
- * 
  */
 public class InitDataFormExcel {
 
@@ -50,7 +49,7 @@ public class InitDataFormExcel {
   private static final List<String> topics = Arrays.asList("健康", "语言", "社会", "科学", "数学", "艺术(音乐)",
       "早期阅读", "艺术(美术)", "我有一个幼儿园", "找找,藏藏", "飘飘,跳跳,滚滚", "我会...", "小小手", "好吃哎", "汽车嘀嘀嘀", "快乐红色",
       "暖暖的...", "思维", "阅读与书写", "习惯与学习品质", "冰波童话", "快乐宝贝", "其他", "幼儿用书", "教师用书", "我想长大", "亲亲热热一家人",
-      "小动物来了", "绿绿的...", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏","托班");
+      "小动物来了", "绿绿的...", "快乐的声音", "大大小小", "从头玩到脚", "特别喜欢你", "清凉一夏", "托班");
 
   static {
     // 文件后缀和MIME的对应关系
@@ -77,24 +76,24 @@ public class InitDataFormExcel {
     suffix.add(".jpg");
 
     // 搜索的一级和二级对应关系
-    searchGradeRelation.put("活动设计", Arrays.asList(new String[] {
+    searchGradeRelation.put("活动设计", Arrays.asList(new String[]{
         "健康", "托班", "语言", "社会", "数学", "科学", "艺术(美术)", "艺术(音乐)"}));
 
-    searchGradeRelation.put("图片", Arrays.asList(new String[] {
+    searchGradeRelation.put("图片", Arrays.asList(new String[]{
         "教学图片", "参考图", "挂图", "轮廓图", "头饰", "手偶", "胸牌"}));
 
     searchGradeRelation.put("动画", Arrays
-        .asList(new String[] {"文学作品动画", "音乐作品动画", "数学教学动画", "其他动画"}));
+        .asList(new String[]{"文学作品动画", "音乐作品动画", "数学教学动画", "其他动画"}));
 
-    searchGradeRelation.put("视频", Arrays.asList(new String[] {"教学用视频", "教学示范课", "音乐表演视频"}));
+    searchGradeRelation.put("视频", Arrays.asList(new String[]{"教学用视频", "教学示范课", "音乐表演视频"}));
 
-    searchGradeRelation.put("音频", Arrays.asList(new String[] {"音乐作品音频", "文学作品音频", "音效"}));
+    searchGradeRelation.put("音频", Arrays.asList(new String[]{"音乐作品音频", "文学作品音频", "音效"}));
 
-    searchGradeRelation.put("电子书", Arrays.asList(new String[] {"早期阅读", "安全教育", "托班"}));
+    searchGradeRelation.put("电子书", Arrays.asList(new String[]{"早期阅读", "安全教育", "托班"}));
   }
 
-  public static void factory(String sdCard1, String sdCard2, String path,String fileName) {
-    log.info("sdCard1:"+sdCard1+"  sdCard2:"+sdCard2+ "  path:"+path+"  fileName:"+fileName);
+  public static void factory(String sdCard1, String sdCard2, String path, String fileName) {
+    log.info("sdCard1:" + sdCard1 + "  sdCard2:" + sdCard2 + "  path:" + path + "  fileName:" + fileName);
     FILES_TAGS.clear();
     ERRORS.clear();
     repeatInfo.clear();
@@ -105,145 +104,22 @@ public class InitDataFormExcel {
       URL url = null;
       URL root = null;
 
-      String fName = "".equals(fileName)?"data.xlsx":fileName;
-      log.info("fName:"+fName);
+      String fName = "".equals(fileName) ? "data.xlsx" : fileName;
+      log.info("fName:" + fName);
       if (path.length() == 0) {
-        url = InitDataFormExcel.class.getResource("/"+fName);
+        url = InitDataFormExcel.class.getResource("/" + fName);
         root = InitDataFormExcel.class.getResource("/");
       } else {
-        url = new URL("file:" + path + "/"+fName);
+        url = new URL("file:" + path + "/" + fName);
         root = new URL("file:" + path + "/");
       }
-      log.info("url:"+url.toString()+"    root:"+root.toString());
+      log.info("url:" + url.toString() + "    root:" + root.toString());
       List<List<String>> data = ExcelData.getExcelData(url.getPath());
       int rows = data.size();
-      for (int i = 0; i < rows; i++) {
-        if (i == 0) {
-          continue;
-        }
-        List<String> list = data.get(i); 
-        log.info("当前行数据："+list.toString());
-        /**
-         * 文件属性检测 0列是编号 1列是文件现实名称 2列是文件路径 3列是文件缩略图路径 第四列是素材类别 第10列是搜索一级分类
-         */
-        if (check) {
-          // 判断文件属性是否缺失
-          if (list.size() < 11) {
-            ERRORS.push("error 第" + i + "行文件属性缺失[文件编号|文件显示名称|文件路径|素材类别|搜索一级分类]都不能为空");
-          }
-          log.info("判断文件编号是否存在：list.get(0):"+list.get(0));
-          // 判断文件编号是否存在
-          if (list.get(0) == null || list.get(0).trim().equals("")) {
-            ERRORS.push("error 第" + i + "行文件编号不能为空");
-          }
-          log.info("判断文件显示名称是否存在：list.get(1):"+list.get(1));
-          // 判断文件显示名称是否存在
-          if (list.get(1) == null || list.get(1).trim().equals("")) {
-            ERRORS.push("error 第" + i + "行文件显示名称不能为空");
-          }
-          log.info("检测ID和文件名的重复性");
-          // 检测ID和文件名的重复性
-          if (list.get(0) != null && list.get(13) != null) {
-            if (repeatIdNames.containsKey((list.get(0).trim()))) {
-              ERRORS.push("error 第" + i + "行文件编号已经存在");
-            }
-            if (repeatIdNames.containsValue((list.get(13).trim()))) {
-              repeatInfo.push("alert 第" + i + "行文件名称有重复");
-            }
-            repeatIdNames.put(list.get(0).trim(), list.get(13).trim());
-          }
-          log.info("判断文件后缀是否合法");
-          // 判断文件后缀是否合法
-          if (list.get(2) == null
-              || !suffix.contains(list.get(2).trim().substring(list.get(2).trim().lastIndexOf("."),
-                  list.get(2).trim().length()))) {
-            ERRORS.push("error 第" + i + "行文件后缀无效");
-          }
-          log.info("判断文件属性路径是否存在");
-          log.info("root:"+root);
-          log.info("root.getPath():"+root.getPath());
-          log.info("list.get(2):"+(list.get(2)==null?"null 行号："+i+" ":""));
-          // 判断文件属性路径是否存在
-          if (!new File(root.getPath() + list.get(2).trim()).exists()) {
-            ERRORS.push("error 第" + i + "行文件路径" + list.get(2).trim() + "不存在");
-          }
-          log.info("判断文件缩略图是否存在");
-          log.info("root:"+root);
-          log.info("root.getPath():"+root.getPath());
 
-          // 判断文件缩略图是否存在
-          if (list.get(3) != null && !new File(root.getPath() + list.get(3).trim()).exists()) {
-            ERRORS.push("error 第" + i + "行缩略图路径" + list.get(3).trim() + "不存在");
-          }
-          log.info("判断文件素材类别");
-          // 判断文件素材类别
-          if (list.get(4) == null || !catagories.contains(list.get(4).trim())) {
-            ERRORS.push("error 第" + i + "行素材类别" + list.get(4).trim() + "不存在，或素材类别不再19个分类中");
-          }
-          log.info("第5列是主题分类 第6列是班级 第7列是学期 第8列是主题或领域");
-          // 第5列是主题分类 第6列是班级 第7列是学期(平台用15列) 第8列是主题或领域(平台用14列)
-          if (list.get(5) != null && !themes.contains(list.get(5).trim())) {
-            ERRORS.push("error 第" + i + "行主题[" + list.get(5).trim() + "]不在" + themes.toString()
-                + "中");
-          }
-          if (list.get(6) != null && !grades.contains(list.get(6).trim())) {
-            ERRORS.push("error 第" + i + "行班级[" + list.get(6).trim() + "]不在" + grades.toString()
-                + "中");
-          }
-          if (list.get(15) != null && !terms.contains(list.get(15).trim())) {
-            ERRORS.push("error 第" + i + "行学期[" + list.get(15).trim() + "]不在" + terms.toString()
-                + "中");
-          }
-          if (list.get(14) != null && !topics.contains(list.get(14).trim())) {
-            ERRORS.push("error 第" + i + "行领域[" + list.get(14).trim() + "]不在" + topics.toString()
-                + "中");
-          }
-          log.info("检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类");
-          // 检测一级搜索分类和二级搜索分类的关系是否完整 第10列是搜索一级分类 第11列是搜索二级分类
-          if (list.get(10) != null && catagories.contains(list.get(10).trim())
-              && list.get(4) != null && !list.get(10).trim().equals(list.get(4).trim())) {
-            ERRORS.push("error 第" + i + "行一级搜索[" + list.get(10).trim() + "]不合格，一级搜索在" + catagories.toString()
-                + "中时,要和素材类别一致,否则会造成重复显示");
-          }
-          if (list.get(10) == null || !mime.containsKey(list.get(10).trim())) {
-            ERRORS.push("error 第" + i + "行一级搜索[" + list.get(10).trim() + "]不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中");
-          } else {
-            if (list.size() > 11 && list.get(11) != null) {
-              // 有二级分类
-              if (searchGradeRelation.get(list.get(10).trim()) == null
-                  || !searchGradeRelation.get(list.get(10).trim()).contains(list.get(11).trim())) {
-                // 但和一级分类不符合
-                ERRORS.push("error 第" + i
-                    + "行一级搜索[" + list.get(10).trim() + "]和二级搜索[ " + list.get(11).trim() + " ]对应关系不合格，请检测一级搜索是否在[活动设计/图片/动画/视频/音频/电子书]中，且对应关系是否符合对应关系");
-              }
-
-              if (list.get(4) != null && !list.get(11).trim().equals(list.get(4))
-                  && catagories.contains(list.get(11).trim())) {
-                // 二级分类和素材类别不一样且二级分类又在18个类别中
-                ERRORS.push("error 第" + i + "二级分类和素材类别不一样且二级分类又在18个类别中，会造成重复显示");
-              }
-            }
-          }
-        }
-      }
-
-      // 打印警告
-      if (repeatInfo.length() > 0) {
-        for (int i = 0; i < repeatInfo.length(); i++) {
-          System.out.println(repeatInfo.getString(i));
-        }
-        System.out.println("\r\n==========EXCEL文件采集信息出现以上警告，请确认数据的正确性=======\r\n ");
-      }
-
-      if (ERRORS.length() > 0) {
-        for (int i = 0; i < ERRORS.length(); i++) {
-          System.out.println(ERRORS.getString(i));
-        }
-        System.out.println("\r\n==========EXCEL文件采集信息出现以上错误，数据初始化终止=======\r\n ");
-      } else {
-        if(repeatInfo.length() == 0){
-            System.out.println("\r\n==========EXCEL文件采集信息完全正确=======\r\n ");
-        }
+      //数据校验
+      boolean bool = ValidateUtil.validateFun(data, root.getPath());
+      if (bool) {
         for (int i = 0; i < rows; i++) {
           if (i == 0) {
             continue;
@@ -252,7 +128,7 @@ public class InitDataFormExcel {
           JsonObject jsonObject =
               Json.createObject().set("_id", list.get(0).trim()).set("title", list.get(1).trim())
                   .set("contentType", getContentTypeBySuffix(list.get(2).trim())).set(
-                      "contentLength", getContentLenght(list.get(2).trim()));
+                  "contentLength", getContentLenght(list.get(2).trim()));
           if (replace) {
             jsonObject.set("url", getTruePath(list.get(2).trim()));// 文件路径
             if (list.size() > 3 && list.get(3) != null) {
@@ -297,7 +173,7 @@ public class InitDataFormExcel {
 
   /**
    * 获取文件的真实路径
-   * 
+   *
    * @return
    */
   private static String getTruePath(String path) {
