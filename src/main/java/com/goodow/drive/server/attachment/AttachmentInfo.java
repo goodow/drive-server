@@ -33,7 +33,7 @@ public class AttachmentInfo extends BusModBase {
   public void start() {
     GuiceVerticleHelper.inject(this, vertx, container);
     super.start();
-    bus.registerHandler(MyConstant.ADDR_ATTACHMENT, new MessageHandler<JsonObject>() {
+    bus.subscribe(MyConstant.ADDR_ATTACHMENT, new MessageHandler<JsonObject>() {
 
       @Override
       public void handle(final Message<JsonObject> message) {

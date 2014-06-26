@@ -37,7 +37,7 @@ public class PlayerAnalytics extends BusModBase implements MyConstant {
   public void start() {
     GuiceVerticleHelper.inject(this, vertx, container);
     super.start();
-    bus.registerHandler(ADDR_PLAYER, new MessageHandler<JsonObject>() {
+    bus.subscribe(ADDR_PLAYER, new MessageHandler<JsonObject>() {
       @Override
       public void handle(final Message<JsonObject> rootMessage) {
         JsonObject body = rootMessage.body();

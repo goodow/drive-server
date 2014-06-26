@@ -34,7 +34,7 @@ public class SystimeAnalytics extends BusModBase implements MyConstant {
   public void start() {
     GuiceVerticleHelper.inject(this, vertx, container);
     super.start();
-    bus.registerHandler(ADDR_SYSTEM, new MessageHandler<JsonObject>() {
+    bus.subscribe(ADDR_SYSTEM, new MessageHandler<JsonObject>() {
 
       @Override
       public void handle(final Message<JsonObject> rootMessage) {

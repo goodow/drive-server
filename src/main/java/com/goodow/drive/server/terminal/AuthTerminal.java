@@ -39,7 +39,7 @@ public class AuthTerminal extends BusModBase implements MyConstant{
   public void start() {
     GuiceVerticleHelper.inject(this, vertx, container);
     super.start();
-    bus.registerHandler(MyConstant.ADDR_GEO, new MessageHandler<JsonObject>() {
+    bus.subscribe(MyConstant.ADDR_GEO, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> rootMessage) {
         JsonObject body = rootMessage.body();

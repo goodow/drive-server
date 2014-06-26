@@ -155,7 +155,7 @@ public class DataImportTest extends TestVerticle {
             VertxAssert.assertNotNull("deploymentID should not be null", asyncResult.result());
             bus = new VertxBus(vertx.eventBus());
             System.out.println("\r\n================== 可以发送消息了==================\r\n");
-            bus.registerHandler("sid.drive.db.start", new MessageHandler<JsonObject>() {
+            bus.subscribe("sid.drive.db.start", new MessageHandler<JsonObject>() {
               @Override
               public void handle(Message<JsonObject> message) {
                 JsonObject body = message.body();
