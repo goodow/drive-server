@@ -309,21 +309,22 @@ public class ValidateUtil {
 
       if (filePath == null || "".equals(filePath.trim())) {
         ERRORS.push("error : 第" + line + "行 文件路径为空");
-      }
-      if (filePath.indexOf(".") <= 0) {
-        ERRORS.push("error : 第" + line + "行 文件路径错误，缺少文件扩展名");
       } else {
-        fileExtension = filePath.substring((filePath.indexOf(".") + 1), filePath.length());
-        log.info("文件扩展名：" + fileExtension);
-      }
-      //获取yamlJsonObj中文件扩展名类别
-      JsonArray obj = yamlJsonObj.get("fileExtension");
-      if (obj.indexOf(fileExtension) < 0) {
-        ERRORS.push("error : 第" + line + "行 文件路径错误，" +
-            "文件扩展名[" + fileExtension + "]不在" + obj.toString() + "中");
-      }
-      if (!new File(folderPath + filePath).exists()) {
-        ERRORS.push("error : 第" + line + "行 文件路径错误，文件路径不存在");
+        if (filePath.indexOf(".") <= 0) {
+          ERRORS.push("error : 第" + line + "行 文件路径错误，缺少文件扩展名");
+        } else {
+          fileExtension = filePath.substring((filePath.lastIndexOf(".") + 1), filePath.length());
+          log.info("文件扩展名：" + fileExtension);
+        }
+        //获取yamlJsonObj中文件扩展名类别
+        JsonArray obj = yamlJsonObj.get("fileExtension");
+        if (obj.indexOf(fileExtension) < 0) {
+          ERRORS.push("error : 第" + line + "行 文件路径错误，" +
+              "文件扩展名[" + fileExtension + "]不在" + obj.toString() + "中");
+        }
+        if (!new File(folderPath + filePath).exists()) {
+          ERRORS.push("error : 第" + line + "行 文件路径错误，文件路径不存在");
+        }
       }
     } catch (Exception e) {
       log.info(getExceptionInfo(e));
