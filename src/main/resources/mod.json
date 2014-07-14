@@ -2,6 +2,6 @@
   "main": "com.goodow.drive.server.bootstrap.DriveVerticle",
   "auto-redeploy": true,
 
-  "includes": "com.goodow.vertx~mod-guice~1.0.0-beta4, com.goodow.realtime~realtime-json~0.5.5-SNAPSHOT",
+  "includes": "com.goodow.vertx~vertx-mod-guice~1.0.0-beta4, com.goodow.realtime~realtime-json~0.5.5-SNAPSHOT",
   "deploys": "com.goodow.realtime~realtime-store~0.5.5-SNAPSHOT"
 }
