@@ -26,7 +26,7 @@ public class DataImportTest extends TestVerticle {
   private static JsonArray sdcards = Json.createArray();
   private static String sdCard1 = "/mnt/sdcard";
   private static String sdCard2 = "/mnt/sdcard";
-  private static String sid = "sid.drive.db";// 提示：sid已经修改为mac
+  private static String sid = "drive/db";// 提示：sid已经修改为mac
   private static String testResPath = "";
   private static String fileName= "";
   private static final JsonArray insertingFiles = Json.createArray();
@@ -34,6 +34,7 @@ public class DataImportTest extends TestVerticle {
   private static Map<String, Integer> SUCCESS_FILE_COUNTER = new HashMap<String, Integer>();
 
   private static void file(final Bus bus, final JsonObject tag, final String currentSid) {
+
     bus.send(currentSid, tag, new MessageHandler<JsonObject>() {
       @Override
       public void handle(Message<JsonObject> message) {
@@ -63,6 +64,7 @@ public class DataImportTest extends TestVerticle {
         }
       }
     });
+
   }
 
   private static void testComplete() {
@@ -135,16 +137,31 @@ public class DataImportTest extends TestVerticle {
     System.out.println("输入参数：sid=" + sid + "  f=" + number + "  sd1=" + sdCard1 + "   sd2="
         + sdCard2 + "   respath=" + testResPath + "\r\n");
 
+//    JsonObject config = Json.createObject();
+//    JsonObject web_server = Json.createObject().set("port", 8082);
+//    config.set("web_server", web_server);
+//    JsonObject realtime_store =
+//        Json.createObject().set("redis", Json.createObject().set("host", "172.16.1.63")).set("storage","redis-elasticsearch");
+//    config.set("realtime_store", realtime_store);
+//    JsonObject realtime_search =
+//        Json.createObject().set("transportAddresses",
+//            Json.createArray().push(Json.createObject().set("host", "172.16.1.63").set("port","9300")))
+//            .set("client_transport_sniff",false);
+//    config.set("realtime_search", realtime_search);
+
     JsonObject config = Json.createObject();
     JsonObject web_server = Json.createObject().set("port", 8082);
     config.set("web_server", web_server);
     JsonObject realtime_store =
-        Json.createObject().set("redis", Json.createObject().set("host", "realtime.goodow.com"));
+        Json.createObject().set("storage","redis-elasticsearch");
     config.set("realtime_store", realtime_store);
     JsonObject realtime_search =
         Json.createObject().set("transportAddresses",
-            Json.createArray().push(Json.createObject().set("host", "realtime.goodow.com")));
+            Json.createArray().push(Json.createObject().set("host", "172.16.1.63")))
+            .set("client_transport_sniff",false);
     config.set("realtime_search", realtime_search);
+    JsonObject redis = Json.createObject().set("host", "172.16.1.63");
+    config.set("redis",redis);
     System.out.println(config);
     container.deployModule(System.getProperty("vertx.modulename"),
         new org.vertx.java.core.json.JsonObject(config.toJsonString()),

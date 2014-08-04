@@ -93,7 +93,8 @@ public class InitDataFormExcel {
   }
 
   public static void factory(String sdCard1, String sdCard2, String path, String fileName) {
-    log.info("sdCard1:" + sdCard1 + "  sdCard2:" + sdCard2 + "  path:" + path + "  fileName:" + fileName);
+    log.info("sdCard1:" + sdCard1 + "  sdCard2:" + sdCard2
+        + "  path:" + path + "  fileName:" + fileName);
     FILES_TAGS.clear();
     ERRORS.clear();
     repeatInfo.clear();
@@ -141,8 +142,10 @@ public class InitDataFormExcel {
             }
           }
           jsonObject.set("tags", Json.createArray().push(list.get(4)).push(list.get(5)).push(
-              list.get(6)).push(list.get(7)).push(list.get(8)).push(list.get(9)).push(list.get(10))
-              .push(list.get(11)).push(list.get(12)));
+              list.get(6)).push(list.get(18)).push(list.get(17)).push(list.get(9)).push(
+              getString(list.get(10))).push(getString(list.get(11))).push(
+              getString(list.get(12))).push(getString(list.get(13))).push(
+              getString(list.get(14))).push(list.get(15)));
 
           FILES_TAGS.push(jsonObject);
         }
@@ -152,6 +155,21 @@ public class InitDataFormExcel {
       e.printStackTrace();
     }
   }
+
+  /**
+   * null转换""
+   *
+   * @param str
+   * @return
+   */
+  private static String getString(String str) {
+    if (null == str || "null".equals(str)) {
+      return "";
+    } else {
+      return str;
+    }
+  }
+
 
   /**
    * 获取文件长度

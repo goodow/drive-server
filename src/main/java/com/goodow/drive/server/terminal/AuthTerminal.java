@@ -125,8 +125,8 @@ public class AuthTerminal extends BusModBase implements MyConstant{
                 .set("contact", body.getString("contacts"))
                 .set("registAddress", body.getString("address"))
                 .set("registCoordinates", Json.createArray()
-                    .push(body.getNumber("latitude"))
-                    .push(body.getNumber("longitude")))
+                    .push(body.getString("address")==null?"":body.getString("address"))
+                    .push(body.getString("longitude")==null?"":body.getString("longitude")))
                 .set("radius", body.getNumber("radius"))
                 .set("reset", 0)
                 .set("lock", 0));
