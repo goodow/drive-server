@@ -348,7 +348,7 @@ public class ValidateUtil {
       if (thumbnailsPath == null || "".equals(thumbnailsPath.trim())) {
         WARNS.push("warn : 第" + line + "行 缩略图文件路径为空");
       }
-      if (thumbnailsPath != null || !"".equals(thumbnailsPath.trim())
+      if (thumbnailsPath != null && !"".equals(thumbnailsPath.trim())
           && !new File(folderPath + thumbnailsPath).exists()) {
         ERRORS.push("error : 第" + line + "行 缩略图文件路径错误，文件路径不存在");
       }
