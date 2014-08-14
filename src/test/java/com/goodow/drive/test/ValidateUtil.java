@@ -99,7 +99,7 @@ public class ValidateUtil {
             //校验缩略图文件路径 3列
             check_thumbnailsPath(dataList.get(3), excelFileFolderPath, line);
             //校验素材类别 4列
-            check_materialType(dataList.get(19), line);
+            check_materialType(dataList.get(4), line);
             //校验分类 5列
             check_classify(dataList.get(5), line);
             //校验班级 6列

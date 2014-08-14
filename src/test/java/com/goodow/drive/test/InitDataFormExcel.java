@@ -141,7 +141,7 @@ public class InitDataFormExcel {
               jsonObject.set("thumbnail", list.get(3).trim());
             }
           }
-          jsonObject.set("tags", Json.createArray().push(list.get(19)).push(list.get(5)).push(
+          jsonObject.set("tags", Json.createArray().push(list.get(4)).push(list.get(5)).push(
               list.get(6)).push(list.get(18)).push(list.get(17)).push(list.get(9)).push(
               getString(list.get(10))).push(getString(list.get(11))).push(
               getString(list.get(12))).push(getString(list.get(13))).push(
